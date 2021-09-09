@@ -1,0 +1,8 @@
+Naming conventions:
+
+- Scripts: cs_ScriptName
+- Materials: m_MaterialName
+- Audio: aud_AudiofileName
+- Animation: anim_AnimationName
+- Assets: a_AssetName
+- Resources: p_ResourceName

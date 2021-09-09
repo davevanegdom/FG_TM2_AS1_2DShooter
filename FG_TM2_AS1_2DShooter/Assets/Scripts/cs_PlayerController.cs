@@ -49,6 +49,8 @@ public class cs_PlayerController : MonoBehaviour
         boostTime = defaultBoostTime;
         turnRate = defaultTurnRate;
         warpDistance = defaultWarpDistance;
+
+        Debug.Log("Hello World");
     }
 
     // Update is called once per frame

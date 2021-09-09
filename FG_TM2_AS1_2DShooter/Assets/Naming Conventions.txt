@@ -6,3 +6,4 @@ Naming conventions:
 - Animation: anim_AnimationName
 - Assets: a_AssetName
 - Resources: p_ResourceName
+- Physics Materials: pm_PhysicsMaterialName

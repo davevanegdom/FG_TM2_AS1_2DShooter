@@ -77,10 +77,7 @@ public class cs_PlayerController : MonoBehaviour
                 deltaHorMove = Input.GetAxis("Horizontal");
             }
             
-            if (Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0)
-            {
-                rbPlayer.velocity = rbPlayer.velocity * defaultDecelartionRate * Time.deltaTime;
-            }
+            
 
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {

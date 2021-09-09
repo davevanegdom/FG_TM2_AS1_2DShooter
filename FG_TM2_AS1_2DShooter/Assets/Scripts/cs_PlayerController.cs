@@ -49,8 +49,6 @@ public class cs_PlayerController : MonoBehaviour
         boostTime = defaultBoostTime;
         turnRate = defaultTurnRate;
         warpDistance = defaultWarpDistance;
-
-        Debug.Log("Hello World");
     }
 
     // Update is called once per frame
@@ -82,7 +80,7 @@ public class cs_PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 isBoosting = true;
-                boostMultiplier = defaultBoostMultiplier;
+                boostMultiplier = defaultBoostMultiplier + 1;
             }
 
             if (Input.GetKeyUp(KeyCode.LeftShift))
@@ -97,6 +95,12 @@ public class cs_PlayerController : MonoBehaviour
 
         //Look at mouse position
         LookAtMouse(Input.mousePosition);
+
+        //Decelaration 
+        if(Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0)
+        {
+            DecelaratePlayer();
+        }
 
         //Warp
         if (Input.GetKeyDown(KeyCode.X))
@@ -120,10 +124,19 @@ public class cs_PlayerController : MonoBehaviour
 
     void DecelaratePlayer()
     {
-        rbPlayer.velocity = rbPlayer.velocity * defaultDecelartionRate * Time.deltaTime;
+        if(rbPlayer.velocity.x < 0.05 && rbPlayer.velocity.y < 0.05 && rbPlayer.velocity.x > -0.05 && rbPlayer.velocity.y > -0.05)
+        {
+            rbPlayer.velocity = new Vector2(0, 0);
+            rbPlayer.drag = 0;
+        }
+        else
+        {
+            rbPlayer.drag = 0.5f;
+        }
+        
     }
 
-    void WarpPlayer(Vector2 mousePos)
+    void WarpPlayer()
     {
         
     }

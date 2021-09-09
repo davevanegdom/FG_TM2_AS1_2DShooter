@@ -106,6 +106,7 @@ public class cs_PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.X))
         {
             //warp
+            WarpPlayer();
         }
     }
 
@@ -120,6 +121,8 @@ public class cs_PlayerController : MonoBehaviour
         Vector2 lookAtPos = Camera.main.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y));
         Vector3 desiredDirection = new Vector3(lookAtPos.x - transform.position.x, lookAtPos.y - transform.position.y, 0);
         transform.right = Vector3.Lerp(transform.right, desiredDirection, turnRate * Time.deltaTime);
+
+        Debug.DrawLine(transform.position, transform.position + (transform.right * 2), Color.red);
     }
 
     void DecelaratePlayer()
@@ -133,15 +136,15 @@ public class cs_PlayerController : MonoBehaviour
         {
             rbPlayer.drag = 0.5f;
         }
-        
     }
 
     void WarpPlayer()
     {
-        
+        Vector2 WarpDir = transform.right * 2;
+        transform.position = new Vector2(transform.position.x + WarpDir.x, transform.position.y + WarpDir.y);
+        rbPlayer.velocity = rbPlayer.velocity.magnitude * transform.right;
     }
 
 
 
-    
 }

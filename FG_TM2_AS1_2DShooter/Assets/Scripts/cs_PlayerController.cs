@@ -16,7 +16,7 @@ public class cs_PlayerController : MonoBehaviour
 
     //Boost related declared variables
     bool isBoosting = false;
-    [SerializeField] float defaultBoostMultiplier = 1;
+    [SerializeField] float defaultBoostMultiplier;
     int boostTime;
     [SerializeField] int defaultBoostTime;
 
@@ -33,6 +33,8 @@ public class cs_PlayerController : MonoBehaviour
 
     //Decelaration
     [SerializeField] float defaultDecelartionRate;
+    //Acceleration
+    [SerializeField] float defaultAccelerationRate;
     #endregion
 
     #region Shooting system
@@ -59,7 +61,7 @@ public class cs_PlayerController : MonoBehaviour
         {
             float deltaVerMove = 0f;
             float deltaHorMove = 0f;
-            float boostMultiplier = 1f;
+            float boostMultiplier = defaultBoostMultiplier;
 
             #region MovementInput
             //Input from the vertical input axis (W & S, Up and Down arrrow, etc)
@@ -80,7 +82,7 @@ public class cs_PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 isBoosting = true;
-                boostMultiplier = defaultBoostMultiplier + 1;
+                boostMultiplier = defaultBoostMultiplier * 2;
             }
 
             if (Input.GetKeyUp(KeyCode.LeftShift))
@@ -112,8 +114,37 @@ public class cs_PlayerController : MonoBehaviour
 
     void MovePlayer(float deltaHorMove, float deltaVerMove, float boostMultiplier)
     {
-        Vector2 deltaMove = new Vector2(deltaHorMove, deltaVerMove);
-        rbPlayer.velocity +=  deltaMove * boostMultiplier * (moveSpeed * Time.deltaTime);
+        float speed = rbPlayer.velocity.magnitude;
+
+        if (rbPlayer.velocity.magnitude < maxMoveSpeed)
+        {
+            if(rbPlayer.velocity.magnitude < minMoveSpeed)
+            {
+                Vector2 deltaMove = new Vector2(deltaHorMove, deltaVerMove).normalized;
+                //rbPlayer.velocity += deltaMove * boostMultiplier * (moveSpeed * Time.deltaTime);
+                rbPlayer.AddForce(deltaMove * boostMultiplier * (5 * (1 - (speed / maxMoveSpeed))) * (moveSpeed * 50 * Time.deltaTime));
+                Vector2 moveDir = new Vector2(transform.position.x + (rbPlayer.velocity.x * speed), transform.position.y + (rbPlayer.velocity.y * speed));
+                //Debug.DrawLine(transform.position, moveDir, Color.red);
+            }
+            else
+            {
+                Vector2 deltaMove = new Vector2(deltaHorMove, deltaVerMove).normalized;
+                //rbPlayer.velocity += deltaMove * boostMultiplier * (moveSpeed * Time.deltaTime);
+                rbPlayer.AddForce(deltaMove * boostMultiplier * (moveSpeed * 50 * Time.deltaTime));
+                Vector2 moveDir = new Vector2(transform.position.x + (rbPlayer.velocity.x * speed), transform.position.y + (rbPlayer.velocity.y * speed));
+                //Debug.DrawLine(transform.position, moveDir, Color.red);
+            }
+
+            //float acceleration = defaultAccelerationRate;
+            //if(speed < minMoveSpeed && speed > 0)
+            //{
+                //acceleration = (1 - (speed / maxMoveSpeed) * defaultAccelerationRate / 100);
+            //}
+            
+            
+        }
+
+
     }
 
     void LookAtMouse(Vector2 mousePos)
@@ -121,8 +152,6 @@ public class cs_PlayerController : MonoBehaviour
         Vector2 lookAtPos = Camera.main.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y));
         Vector3 desiredDirection = new Vector3(lookAtPos.x - transform.position.x, lookAtPos.y - transform.position.y, 0);
         transform.right = Vector3.Lerp(transform.right, desiredDirection, turnRate * Time.deltaTime);
-
-        Debug.DrawLine(transform.position, transform.position + (transform.right * 2), Color.red);
     }
 
     void DecelaratePlayer()

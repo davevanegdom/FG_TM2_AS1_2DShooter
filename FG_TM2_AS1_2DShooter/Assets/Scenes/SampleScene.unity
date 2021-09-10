@@ -676,10 +676,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58bf46240b4798c47bce2d15434715e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMoveSpeed: 2
-  maxMoveSpeed: 0
-  minMoveSpeed: 0
-  defaultBoostMultiplier: 10
+  defaultMoveSpeed: 5
+  maxMoveSpeed: 7
+  minMoveSpeed: 2
+  defaultBoostMultiplier: 1
   defaultBoostTime: 0
   defaultTurnRate: 20
   maxTurnRate: 0
@@ -687,6 +687,7 @@ MonoBehaviour:
   warpTime: 0.15
   minWarpDistance: 0.25
   defaultDecelartionRate: 0.99
+  defaultAccelerationRate: 1
   defaultFiringRate: 0
 --- !u!50 &604590315
 Rigidbody2D:

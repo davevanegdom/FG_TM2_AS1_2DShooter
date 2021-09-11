@@ -6,40 +6,57 @@ public class cs_PlayerController : MonoBehaviour
 {
     
     Rigidbody2D rbPlayer;
+    [SerializeField] Camera mCamera = null;
+
+    public bool method = false;
 
     #region Movement System variables
+
+    [Header("Movement")]
     //Movement related declared variables
-    float moveSpeed;
     [SerializeField] float defaultMoveSpeed = 2;
     [SerializeField] float maxMoveSpeed;
     [SerializeField] float minMoveSpeed;
+    float moveSpeed;
+  
 
+    [Header("Boost")]
     //Boost related declared variables
-    bool isBoosting = false;
     [SerializeField] float defaultBoostMultiplier;
+    bool isBoosting = false;
     int boostTime;
     [SerializeField] int defaultBoostTime;
 
+    [Header("Turning")]
     //Turning related declared variables
-    float turnRate;
     [SerializeField] float defaultTurnRate = 20;
-    [SerializeField] float maxTurnRate;
+    float turnRate;
+    
 
+    [Header("Dashing")]
+    //Dash related declared variables
+    [SerializeField] float dashMultiplier = 1f;
+    [SerializeField] [Range(0, 1)] float retainMomentumPercentage;
+
+    [Header("Warping")]
     //Warp related declared variables
-    float warpDistance;
     [SerializeField] float defaultWarpDistance = 2;
     [SerializeField] float warpTime = 0.2f;
     [SerializeField] float minWarpDistance = 0.25f;
+    float warpDistance;
+    
 
+    [Header("Other")]
     //Decelaration
-    [SerializeField] float defaultDecelartionRate;
+    [SerializeField] [Range(0, 2)] float defaultDecelartionRate = 0.5f;
     //Acceleration
-    [SerializeField] float defaultAccelerationRate;
     #endregion
 
+    
     #region Shooting system
     [SerializeField] float defaultFiringRate; //in seconds
-
+    [SerializeField] GameObject prefabBullet;
+    [SerializeField] float shootForce;
     #endregion
 
 
@@ -104,11 +121,28 @@ public class cs_PlayerController : MonoBehaviour
             DecelaratePlayer();
         }
 
+        //Dash
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Joystick1Button10))
+        {
+            DashPlayer(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        }
+
         //Warp
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.Joystick1Button1))
         {
             //warp
             WarpPlayer();
+        }
+
+        //Shoot
+        if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Joystick1Button7))
+        {
+            InvokeRepeating("ShootPlayer", 0, defaultFiringRate);
+        }
+
+        if (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Joystick1Button7))
+        {
+            CancelInvoke();
         }
     }
 
@@ -118,33 +152,22 @@ public class cs_PlayerController : MonoBehaviour
 
         if (rbPlayer.velocity.magnitude < maxMoveSpeed)
         {
-            if(rbPlayer.velocity.magnitude < minMoveSpeed)
+            Vector2 deltaMove = new Vector2(deltaHorMove, deltaVerMove).normalized;
+            Debug.DrawLine(transform.position, new Vector2(transform.position.x + deltaMove.x, transform.position.y + deltaMove.y), Color.blue);
+
+            if (rbPlayer.velocity.magnitude < minMoveSpeed)
             {
-                Vector2 deltaMove = new Vector2(deltaHorMove, deltaVerMove).normalized;
-                //rbPlayer.velocity += deltaMove * boostMultiplier * (moveSpeed * Time.deltaTime);
                 rbPlayer.AddForce(deltaMove * boostMultiplier * (5 * (1 - (speed / maxMoveSpeed))) * (moveSpeed * 50 * Time.deltaTime));
                 Vector2 moveDir = new Vector2(transform.position.x + (rbPlayer.velocity.x * speed), transform.position.y + (rbPlayer.velocity.y * speed));
-                //Debug.DrawLine(transform.position, moveDir, Color.red);
+                Debug.DrawLine(transform.position, moveDir, Color.red);
             }
             else
             {
-                Vector2 deltaMove = new Vector2(deltaHorMove, deltaVerMove).normalized;
-                //rbPlayer.velocity += deltaMove * boostMultiplier * (moveSpeed * Time.deltaTime);
                 rbPlayer.AddForce(deltaMove * boostMultiplier * (moveSpeed * 50 * Time.deltaTime));
                 Vector2 moveDir = new Vector2(transform.position.x + (rbPlayer.velocity.x * speed), transform.position.y + (rbPlayer.velocity.y * speed));
-                //Debug.DrawLine(transform.position, moveDir, Color.red);
-            }
-
-            //float acceleration = defaultAccelerationRate;
-            //if(speed < minMoveSpeed && speed > 0)
-            //{
-                //acceleration = (1 - (speed / maxMoveSpeed) * defaultAccelerationRate / 100);
-            //}
-            
-            
+                Debug.DrawLine(transform.position, moveDir, Color.red);
+            } 
         }
-
-
     }
 
     void LookAtMouse(Vector2 mousePos)
@@ -163,8 +186,21 @@ public class cs_PlayerController : MonoBehaviour
         }
         else
         {
-            rbPlayer.drag = 0.5f;
+            rbPlayer.drag = defaultDecelartionRate;
         }
+    }
+
+    void DashPlayer(float deltaHorMove, float deltaVerMove)
+    {
+        #region Dash towards look direction
+        //rbPlayer.velocity = transform.right * (rbPlayer.velocity.magnitude * dashMultiplier);
+        #endregion
+
+        #region Dash towards input direction
+        rbPlayer.velocity -= rbPlayer.velocity * (1 - retainMomentumPercentage);
+        Vector2 dashDir = new Vector2(deltaHorMove, deltaVerMove).normalized;
+        rbPlayer.AddForce(dashDir * (dashMultiplier * (1 - (rbPlayer.velocity.magnitude / maxMoveSpeed))));
+        #endregion
     }
 
     void WarpPlayer()
@@ -174,6 +210,9 @@ public class cs_PlayerController : MonoBehaviour
         rbPlayer.velocity = rbPlayer.velocity.magnitude * transform.right;
     }
 
-
-
+    void ShootPlayer()
+    {
+        GameObject bullet = Instantiate(prefabBullet, transform.position, Quaternion.identity);
+        bullet.GetComponent<Rigidbody2D>().AddForce(new Vector2(transform.right.x * shootForce, 0));
+    }
 }

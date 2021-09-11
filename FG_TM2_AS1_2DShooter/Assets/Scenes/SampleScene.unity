@@ -676,19 +676,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58bf46240b4798c47bce2d15434715e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mCamera: {fileID: 0}
+  method: 0
   defaultMoveSpeed: 5
   maxMoveSpeed: 7
   minMoveSpeed: 2
   defaultBoostMultiplier: 1
   defaultBoostTime: 0
   defaultTurnRate: 20
-  maxTurnRate: 0
+  dashMultiplier: 200
+  retainMomentumPercentage: 0.1
   defaultWarpDistance: 2
   warpTime: 0.15
   minWarpDistance: 0.25
-  defaultDecelartionRate: 0.99
-  defaultAccelerationRate: 1
-  defaultFiringRate: 0
+  defaultDecelartionRate: 0.5
+  defaultFiringRate: 2
+  prefabBullet: {fileID: 8194884428358335612, guid: 96097d827b36e4c4ba8b942886b4a435, type: 3}
+  shootForce: 50
 --- !u!50 &604590315
 Rigidbody2D:
   serializedVersion: 4
@@ -1033,3 +1037,51 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1456076001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1456076002}
+  - component: {fileID: 1456076003}
+  m_Layer: 0
+  m_Name: TargetPractise
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1456076002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1456076001}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1456076003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1456076001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 961c779fb17fec7408fbc08b3582cd4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabTarget: {fileID: 1650106094864869846, guid: 06b19754f7e62214ea8d3a2163bce248, type: 3}
+  topWall: {fileID: 25130807}
+  bottomWall: {fileID: 88475280}
+  leftWall: {fileID: 24586805}
+  rightWall: {fileID: 723538118}

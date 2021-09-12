@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class cs_PlayerController : MonoBehaviour
 {
-    
+
     Rigidbody2D rbPlayer;
     [SerializeField] Camera mCamera = null;
-
-    public bool method = false;
 
     #region Movement System variables
 
@@ -18,7 +16,7 @@ public class cs_PlayerController : MonoBehaviour
     [SerializeField] float maxMoveSpeed;
     [SerializeField] float minMoveSpeed;
     float moveSpeed;
-  
+
 
     [Header("Boost")]
     //Boost related declared variables
@@ -31,20 +29,27 @@ public class cs_PlayerController : MonoBehaviour
     //Turning related declared variables
     [SerializeField] float defaultTurnRate = 20;
     float turnRate;
-    
+
 
     [Header("Dashing")]
     //Dash related declared variables
     [SerializeField] float dashMultiplier = 1f;
     [SerializeField] [Range(0, 1)] float retainMomentumPercentage;
+    [SerializeField] [Range(0, 5)] float dashCooldown;
+    private bool canDash = true;
+    public enum dashSystem {DashInMovementInputDirection, DashInLookDirection}
+    public dashSystem selectedSystem = dashSystem.DashInMovementInputDirection;
 
     [Header("Warping")]
     //Warp related declared variables
     [SerializeField] float defaultWarpDistance = 2;
     [SerializeField] float warpTime = 0.2f;
     [SerializeField] float minWarpDistance = 0.25f;
+    [SerializeField] float warpCooldown;
+    private bool canWarp = true;
     float warpDistance;
-    
+
+
 
     [Header("Other")]
     //Decelaration
@@ -52,7 +57,7 @@ public class cs_PlayerController : MonoBehaviour
     //Acceleration
     #endregion
 
-    
+
     #region Shooting system
     [SerializeField] float defaultFiringRate; //in seconds
     [SerializeField] GameObject prefabBullet;
@@ -122,13 +127,13 @@ public class cs_PlayerController : MonoBehaviour
         }
 
         //Dash
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Joystick1Button10))
+        if (Input.GetKeyDown(KeyCode.Space) && canDash|| Input.GetKeyDown(KeyCode.Joystick1Button10) && canDash)
         {
             DashPlayer(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         }
 
         //Warp
-        if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.Joystick1Button1))
+        if (Input.GetKeyDown(KeyCode.X) && canWarp|| Input.GetKeyDown(KeyCode.Joystick1Button1) && canWarp)
         {
             //warp
             WarpPlayer();
@@ -192,22 +197,32 @@ public class cs_PlayerController : MonoBehaviour
 
     void DashPlayer(float deltaHorMove, float deltaVerMove)
     {
-        #region Dash towards look direction
-        //rbPlayer.velocity = transform.right * (rbPlayer.velocity.magnitude * dashMultiplier);
-        #endregion
+        switch (selectedSystem)
+        {
+            case dashSystem.DashInMovementInputDirection:
+                rbPlayer.velocity -= rbPlayer.velocity * (1 - retainMomentumPercentage);
+                Vector2 dashDir = new Vector2(deltaHorMove, deltaVerMove).normalized;
+                rbPlayer.AddForce(dashDir * (dashMultiplier * (1 - (rbPlayer.velocity.magnitude / maxMoveSpeed))));
+                break;
 
-        #region Dash towards input direction
-        rbPlayer.velocity -= rbPlayer.velocity * (1 - retainMomentumPercentage);
-        Vector2 dashDir = new Vector2(deltaHorMove, deltaVerMove).normalized;
-        rbPlayer.AddForce(dashDir * (dashMultiplier * (1 - (rbPlayer.velocity.magnitude / maxMoveSpeed))));
-        #endregion
+            case dashSystem.DashInLookDirection:
+                //rbPlayer.velocity = transform.right * (rbPlayer.velocity.magnitude * dashMultiplier);
+                rbPlayer.velocity -= rbPlayer.velocity * (1 - retainMomentumPercentage);
+                rbPlayer.AddForce(transform.right * (dashMultiplier * (1 - (rbPlayer.velocity.magnitude / maxMoveSpeed))));
+                break;
+        }
+        
+        canDash = false;
+        StartCoroutine(cooldownTimer(0, dashCooldown));
     }
 
     void WarpPlayer()
     {
-        Vector2 WarpDir = transform.right * 2;
+        Vector2 WarpDir = transform.right * defaultWarpDistance;
         transform.position = new Vector2(transform.position.x + WarpDir.x, transform.position.y + WarpDir.y);
         rbPlayer.velocity = rbPlayer.velocity.magnitude * transform.right;
+        canWarp = false;
+        StartCoroutine(cooldownTimer(1, warpCooldown));
     }
 
     void ShootPlayer()
@@ -215,4 +230,54 @@ public class cs_PlayerController : MonoBehaviour
         GameObject bullet = Instantiate(prefabBullet, transform.position, Quaternion.identity);
         bullet.GetComponent<Rigidbody2D>().AddForce(new Vector2(transform.right.x * shootForce, 0));
     }
+
+    public IEnumerator cooldownTimer(int action, float cooldown)
+    {
+        float time = 0f;
+
+        while (time < cooldown)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        switch (action)
+        {
+            case 0:
+                canDash = true;
+                Debug.Log("canDash = " + canDash);
+                break;
+
+            case 1:
+                canWarp = true;
+                Debug.Log("canWarp = " + canWarp);
+                break;
+        }
+    }
+
+    #region The two seperate timers
+    public IEnumerator dashCooldownTimer()
+    {
+        float time = 0f;
+
+        while (time < dashCooldown)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+        canDash = true;
+    }
+
+    public IEnumerator warpCooldownTimer()
+    {
+        float time = 0f;
+
+        while (time < warpCooldown)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+        canWarp = true;
+    }
+    #endregion
 }

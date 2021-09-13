@@ -7,12 +7,11 @@ public class cs_UIManager : MonoBehaviour
 {
     public cs_GameManager gameManager;
 
-    [SerializeField] Text shootingScoreCounter;
+    public Text uiWaveIndex;
+    public Text uiWaveProgress;
+    public Text uiRedTeamPucks;
+    public Text uiBlueTeamPucks;
+    public Text uiGameTimer;
+    public Text uiPuckCount;
 
-
-    public void UpdateShooterScore()
-    {
-        gameManager.shootingScore++;
-        shootingScoreCounter.text = gameManager.shootingScore.ToString();
-    }
 }

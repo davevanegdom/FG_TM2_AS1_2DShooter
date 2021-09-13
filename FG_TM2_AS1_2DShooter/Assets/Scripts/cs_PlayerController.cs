@@ -59,7 +59,7 @@ public class cs_PlayerController : MonoBehaviour
 
     #region Shooting system
     [SerializeField] float defaultFiringRate; //in seconds
-    [SerializeField] int puckCount;
+    public int puckCount;
     [SerializeField] GameObject prefabBullet;
     [SerializeField] float shootForce;
 

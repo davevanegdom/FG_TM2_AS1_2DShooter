@@ -19,12 +19,12 @@ public class cs_Target : MonoBehaviour
         Destroy(gameObject, 4f);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.gameObject.name != "Player")
-        {
-            uiManager.UpdateShooterScore();
-            Destroy(gameObject);
-        }
-    }
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if(collision.gameObject.name != "Player")
+    //    {
+    //        uiManager.UpdateShooterScore();
+    //        Destroy(gameObject);
+    //    }
+    //}
 }

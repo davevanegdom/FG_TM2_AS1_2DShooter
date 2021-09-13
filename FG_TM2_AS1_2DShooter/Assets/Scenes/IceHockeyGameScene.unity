@@ -2571,7 +2571,7 @@ MonoBehaviour:
   playerLifes: 3
   playerLifesPanel: {fileID: 505709645}
   playerLifeIcons: []
-  prefabPlayerLifeIcon: {fileID: 0}
+  prefabPlayerLifeIcon: {fileID: 21300000, guid: fe931f09978d5634e83e59356acec2d0, type: 3}
   playerPucks: 5
   playerPucksInNet: 0
   playerSpawnPoint: {fileID: 1668507358}

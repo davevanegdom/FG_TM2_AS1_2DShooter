@@ -8,7 +8,7 @@ public class cs_GameManager : MonoBehaviour
     [SerializeField] GameObject prefabPlayer;
     cs_PlayerController playerController;
     [SerializeField] cs_UIManager uiManager;
-    private bool gameIsActive;
+    private bool gameIsActive = true;
 
     [Header("Player")]
     public int playerLifes;
@@ -31,7 +31,8 @@ public class cs_GameManager : MonoBehaviour
 
     private void Start()
     {
-        startGame(playerLifes, playerPucks, waveIndex, savedSeconds);
+        minutes--;
+        startGame(playerLifes, playerPucks, waveIndex, (savedSeconds + (minutes * 60) + (hours * 3600)));
     }
 
 
@@ -49,12 +50,15 @@ public class cs_GameManager : MonoBehaviour
 
         //Update the puck count on the player controller
         playerController.puckCount = currentPlayerPucks;
+        uiManager.uiPuckCount.text = currentPlayerPucks.ToString();
 
         //Set the wave index of the UI
         uiManager.uiWaveIndex.text = currentWave.ToString();
 
         //Start game timer
-        StartCoroutine(gameTimer(seconds));
+        //StartCoroutine(gameTimer(seconds));
+
+        InvokeRepeating("displayTime", 1, 1);
     }
 
     void SpawnPlayer(Vector2 spawnPos)
@@ -75,35 +79,51 @@ public class cs_GameManager : MonoBehaviour
 
     }
 
-    public IEnumerator gameTimer(float seconds)
+    //public IEnumerator gameTimer(float seconds)
+    //{
+    //    float time = seconds;
+    //    Debug.Log("Timer Started");
+
+    //    while (gameIsActive)
+    //    {
+    //        time += Time.deltaTime;
+    //        Mathf.FloorToInt(time);
+    //        uiManager.uiGameTimer.text = displayTime((int)time);
+    //        yield return null;
+    //    }
+
+    //    savedSeconds = Mathf.FloorToInt(time);
+    //}
+
+
+    void displayTime()
     {
-        float time = seconds;
+        savedSeconds++;
 
-        while (gameIsActive)
-        {
-            time += Time.deltaTime;
-            Mathf.FloorToInt(time);
-            uiManager.uiGameTimer.text = displayTime(time);
-            yield return null;
-        }
-
-        savedSeconds = Mathf.FloorToInt(time);
-    }
-
-    string displayTime(float seconds)
-    {
         string timeSeconds = "";
         string timeMinutes = "";
         string timeHours = "";
+        
+        float correctSeconds = 0;
+
+        if(hours < 1)
+        {
+            correctSeconds = savedSeconds - ((minutes - 1) * 60);
+        }
+        else
+        {
+            correctSeconds = savedSeconds - ((minutes - 1)* 60) - ((hours - 1) * 3600);
+        }
+        
 
         #region Seconds
-        if (seconds < 10)
+        if (correctSeconds < 10)
         {
-            timeSeconds = ":0" + seconds;
+            timeSeconds = ":0" + correctSeconds;
         }
-        else if(seconds >= 10 && seconds < 60)
+        else if(correctSeconds >= 10 && correctSeconds < 60)
         {
-            timeSeconds = ":" + seconds.ToString();
+            timeSeconds = ":" + correctSeconds.ToString();
         }
         else
         {
@@ -128,6 +148,7 @@ public class cs_GameManager : MonoBehaviour
         {
             timeMinutes = "00";
             hours++;
+            Debug.Log(hours);
         }
         #endregion minutes;
         #region Hours
@@ -144,8 +165,7 @@ public class cs_GameManager : MonoBehaviour
             timeHours = hours + ":";
         }
         #endregion 
-
-        string newTime = timeHours + timeMinutes + timeSeconds;
-        return newTime;
+        
+        uiManager.uiGameTimer.text = timeHours + timeMinutes + timeSeconds;
     }
 }

@@ -7,6 +7,7 @@ public class cs_PlayerController : MonoBehaviour
 
     Rigidbody2D rbPlayer;
     [SerializeField] Camera mCamera = null;
+    [SerializeField] private Transform bulletSpawnPoint;
 
     #region Movement System variables
 
@@ -49,8 +50,6 @@ public class cs_PlayerController : MonoBehaviour
     private bool canWarp = true;
     float warpDistance;
 
-
-
     [Header("Other")]
     //Decelaration
     [SerializeField] [Range(0, 2)] float defaultDecelartionRate = 0.5f;
@@ -81,7 +80,7 @@ public class cs_PlayerController : MonoBehaviour
 
         //MovePlayer Variables
         {
-            float deltaVerMove = 0f;
+            float deltaVerMove = 0f; 
             float deltaHorMove = 0f;
             float boostMultiplier = defaultBoostMultiplier;
 
@@ -227,8 +226,12 @@ public class cs_PlayerController : MonoBehaviour
 
     void ShootPlayer()
     {
-        GameObject bullet = Instantiate(prefabBullet, transform.position, Quaternion.identity);
-        bullet.GetComponent<Rigidbody2D>().AddForce(new Vector2(transform.right.x * shootForce, 0));
+        GameObject bullet = Instantiate(prefabBullet, bulletSpawnPoint.position, Quaternion.identity);
+        Vector2 shootDir = new Vector2(transform.position.x + transform.right.x * shootForce, transform.position.y + transform.right.y * shootForce);
+        bullet.GetComponent<Rigidbody2D>().AddForce(shootDir);
+        Debug.DrawLine(transform.position, transform.position + (transform.right * 1), Color.green);
+
+        Destroy(bullet, 2f);
     }
 
     public IEnumerator cooldownTimer(int action, float cooldown)
@@ -245,12 +248,10 @@ public class cs_PlayerController : MonoBehaviour
         {
             case 0:
                 canDash = true;
-                Debug.Log("canDash = " + canDash);
                 break;
 
             case 1:
                 canWarp = true;
-                Debug.Log("canWarp = " + canWarp);
                 break;
         }
     }

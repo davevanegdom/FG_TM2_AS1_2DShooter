@@ -59,8 +59,10 @@ public class cs_PlayerController : MonoBehaviour
 
     #region Shooting system
     [SerializeField] float defaultFiringRate; //in seconds
+    [SerializeField] int puckCount;
     [SerializeField] GameObject prefabBullet;
     [SerializeField] float shootForce;
+
     #endregion
 
 
@@ -139,15 +141,11 @@ public class cs_PlayerController : MonoBehaviour
         }
 
         //Shoot
-        if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Joystick1Button7))
+        if(Input.GetMouseButtonDown(0) && puckCount > 0|| Input.GetKeyDown(KeyCode.Joystick1Button7) && puckCount > 0)
         {
-            InvokeRepeating("ShootPlayer", 0, defaultFiringRate);
+            ShootPlayer();
         }
 
-        if (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Joystick1Button7))
-        {
-            CancelInvoke();
-        }
     }
 
     void MovePlayer(float deltaHorMove, float deltaVerMove, float boostMultiplier)
@@ -230,8 +228,8 @@ public class cs_PlayerController : MonoBehaviour
         Vector2 shootDir = new Vector2(transform.position.x + transform.right.x * shootForce, transform.position.y + transform.right.y * shootForce);
         bullet.GetComponent<Rigidbody2D>().AddForce(shootDir);
         Debug.DrawLine(transform.position, transform.position + (transform.right * 1), Color.green);
+        puckCount--;
 
-        Destroy(bullet, 2f);
     }
 
     public IEnumerator cooldownTimer(int action, float cooldown)

@@ -141,11 +141,10 @@ public class cs_PlayerController : MonoBehaviour
         }
 
         //Shoot
-        if(Input.GetMouseButtonDown(0) && puckCount > 0|| Input.GetKeyDown(KeyCode.Joystick1Button7) && puckCount > 0)
+        if(Input.GetMouseButtonDown(0) && gameManager.playerPucks > 0|| Input.GetKeyDown(KeyCode.Joystick1Button7) && gameManager.playerPucks > 0)
         {
             ShootPlayer();
         }
-
     }
 
     void MovePlayer(float deltaHorMove, float deltaVerMove, float boostMultiplier)

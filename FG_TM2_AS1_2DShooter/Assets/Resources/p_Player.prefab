@@ -256,10 +256,10 @@ MonoBehaviour:
   defaultBoostMultiplier: 1
   defaultBoostTime: 0
   defaultTurnRate: 20
-  dashMultiplier: 200
+  dashMultiplier: 150
   retainMomentumPercentage: 0.1
   dashCooldown: 1
-  selectedSystem: 0
+  selectedSystem: 1
   defaultWarpDistance: 2
   warpTime: 0.15
   minWarpDistance: 0.25

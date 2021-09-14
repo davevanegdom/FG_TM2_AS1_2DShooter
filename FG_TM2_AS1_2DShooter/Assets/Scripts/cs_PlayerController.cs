@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class cs_PlayerController : MonoBehaviour
 {
-
+    public cs_GameManager gameManager;
     Rigidbody2D rbPlayer;
     [SerializeField] Camera mCamera = null;
     [SerializeField] private Transform bulletSpawnPoint;
@@ -228,8 +228,15 @@ public class cs_PlayerController : MonoBehaviour
         Vector2 shootDir = new Vector2(transform.position.x + transform.right.x * shootForce, transform.position.y + transform.right.y * shootForce);
         bullet.GetComponent<Rigidbody2D>().AddForce(shootDir);
         Debug.DrawLine(transform.position, transform.position + (transform.right * 1), Color.green);
-        puckCount--;
+        gameManager.playerPucks--;
+        gameManager.uiManager.uiPuckCount.text = gameManager.playerPucks.ToString();
+    }
 
+    void PickUpPuckPlayer(GameObject collidedPuck)
+    {
+        gameManager.playerPucks++;
+        gameManager.uiManager.uiPuckCount.text = gameManager.playerPucks.ToString();
+        Destroy(collidedPuck);
     }
 
     public IEnumerator cooldownTimer(int action, float cooldown)
@@ -279,4 +286,12 @@ public class cs_PlayerController : MonoBehaviour
         canWarp = true;
     }
     #endregion
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Puck")
+        {
+            PickUpPuckPlayer(collision.gameObject);
+        }
+    }
 }

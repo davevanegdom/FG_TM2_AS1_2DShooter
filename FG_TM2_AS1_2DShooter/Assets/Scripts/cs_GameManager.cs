@@ -7,7 +7,7 @@ public class cs_GameManager : MonoBehaviour
 {
     [SerializeField] GameObject prefabPlayer;
     cs_PlayerController playerController;
-    [SerializeField] cs_UIManager uiManager;
+    public cs_UIManager uiManager;
     private bool gameIsActive = true;
 
     [Header("Player")]
@@ -26,17 +26,16 @@ public class cs_GameManager : MonoBehaviour
 
     [Header("UI")]
     public int savedSeconds = 0;
-    public int minutes = 0;
-    public int hours = 0;
+    public int savedMinutes = 0;
+    public int savedHours = 0;
 
     private void Start()
     {
-        minutes--;
-        startGame(playerLifes, playerPucks, waveIndex, (savedSeconds + (minutes * 60) + (hours * 3600)));
+        savedSeconds = (savedHours * 3600) + (savedMinutes * 60) + savedSeconds;
+        startGame(playerLifes, playerPucks, waveIndex);
     }
 
-
-    void startGame(int currentPlayerLifes, int currentPlayerPucks, int currentWave, float seconds)
+    void startGame(int currentPlayerLifes, int currentPlayerPucks, int currentWave)
     {
         //Spawn player
         SpawnPlayer(playerSpawnPoint.position);
@@ -53,12 +52,13 @@ public class cs_GameManager : MonoBehaviour
         uiManager.uiPuckCount.text = currentPlayerPucks.ToString();
 
         //Set the wave index of the UI
-        uiManager.uiWaveIndex.text = currentWave.ToString();
+        uiManager.uiWaveIndex.text = "WAVE " + currentWave;
 
         //Start game timer
         //StartCoroutine(gameTimer(seconds));
 
         InvokeRepeating("displayTime", 1, 1);
+        
     }
 
     void SpawnPlayer(Vector2 spawnPos)
@@ -67,6 +67,7 @@ public class cs_GameManager : MonoBehaviour
         {
             GameObject player = Instantiate(prefabPlayer, spawnPos, Quaternion.identity);
             playerController = player.GetComponent<cs_PlayerController>();
+            playerController.gameManager = this;
         }
         else
         {
@@ -75,97 +76,82 @@ public class cs_GameManager : MonoBehaviour
             GameObject player = Instantiate(prefabPlayer, spawnPos, Quaternion.identity);
             playerController = player.GetComponent<cs_PlayerController>();
         }
-
-
     }
-
-    //public IEnumerator gameTimer(float seconds)
-    //{
-    //    float time = seconds;
-    //    Debug.Log("Timer Started");
-
-    //    while (gameIsActive)
-    //    {
-    //        time += Time.deltaTime;
-    //        Mathf.FloorToInt(time);
-    //        uiManager.uiGameTimer.text = displayTime((int)time);
-    //        yield return null;
-    //    }
-
-    //    savedSeconds = Mathf.FloorToInt(time);
-    //}
-
 
     void displayTime()
     {
         savedSeconds++;
 
-        string timeSeconds = "";
-        string timeMinutes = "";
-        string timeHours = "";
+        int hours = 0;
+        int minutes = 0;
+        int seconds = savedSeconds;
+
+        string stringHours = "";
+        string stringMinutes = "";
+        string stringSeconds = "";
+
+        if(seconds > 3600)
+        {
+            hours = Mathf.FloorToInt(seconds / 3600);
+            savedHours = hours;
+            seconds -= hours * 3600;
+        }
         
-        float correctSeconds = 0;
+        if(seconds > 60)
+        {
+            minutes = Mathf.FloorToInt(seconds / 60);
+            savedMinutes = minutes;
+            seconds -= minutes * 60;
+        }
+
+        if(seconds < 10)
+        {
+            stringSeconds = "0" + seconds;
+        }
+        else if(seconds < 60)
+        {
+            stringSeconds = seconds.ToString();
+        }
+        else
+        {
+            stringSeconds = "00";
+            minutes++;
+        }
+
+        if (minutes < 10)
+        {
+            stringMinutes = "0" + minutes;
+        }
+        else if(minutes < 60)
+        {
+            stringMinutes = minutes.ToString();
+        }
+        else
+        {
+            stringMinutes = "00";
+            hours++;
+        }
+
+        if (hours < 24)
+        {
+            stringHours = hours.ToString();
+        }
 
         if(hours < 1)
         {
-            correctSeconds = savedSeconds - ((minutes - 1) * 60);
+            uiManager.uiGameTimer.text = stringMinutes + ":" + stringSeconds;
         }
-        else
+        else if (hours >= 1 && hours < 24)
         {
-            correctSeconds = savedSeconds - ((minutes - 1)* 60) - ((hours - 1) * 3600);
+            uiManager.uiGameTimer.text = stringHours + ":" + stringMinutes + ":" + stringSeconds;
         }
-        
-
-        #region Seconds
-        if (correctSeconds < 10)
+        else 
         {
-            timeSeconds = ":0" + correctSeconds;
+            uiManager.uiGameTimer.text = "GET A LIFE";
+            uiManager.uiGameTimer.fontSize = 14;
         }
-        else if(correctSeconds >= 10 && correctSeconds < 60)
-        {
-            timeSeconds = ":" + correctSeconds.ToString();
-        }
-        else
-        {
-            minutes++;
-            timeSeconds = ":00";
-        }
-        #endregion
-        #region Minutes
-        if (minutes < 1)
-        {
-            timeMinutes = "00";
-        }
-        else if(minutes >= 1 && minutes < 10)
-        {
-            timeMinutes = "0" + minutes;
-        }
-        else if(minutes >= 10 && minutes < 60)
-        {
-            timeMinutes = minutes.ToString();
-        }
-        else
-        {
-            timeMinutes = "00";
-            hours++;
-            Debug.Log(hours);
-        }
-        #endregion minutes;
-        #region Hours
-        if (hours < 1)
-        {
-            timeHours = "";
-        }
-        else if(hours >= 1 && hours < 10)
-        {
-            timeHours = "0" + hours + ":";
-        }
-        else
-        {
-            timeHours = hours + ":";
-        }
-        #endregion 
-        
-        uiManager.uiGameTimer.text = timeHours + timeMinutes + timeSeconds;
     }
+
+
+
 }

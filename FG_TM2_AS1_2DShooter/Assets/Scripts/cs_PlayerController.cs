@@ -122,9 +122,14 @@ public class cs_PlayerController : MonoBehaviour
         LookAtMouse(Input.mousePosition);
 
         //Decelaration 
-        if(Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0)
+
+        if (Input.GetAxis("Horizontal") == 0)
         {
-            DecelaratePlayer();
+            DecelaratePlayer(0);
+        }
+        if (Input.GetAxis("Horizontal") == 0)
+        {
+            DecelaratePlayer(1);
         }
 
         //Dash
@@ -178,17 +183,20 @@ public class cs_PlayerController : MonoBehaviour
         transform.right = Vector3.Lerp(transform.right, desiredDirection, turnRate * Time.deltaTime);
     }
 
-    void DecelaratePlayer()
+    void DecelaratePlayer(int axis)
     {
-        if(rbPlayer.velocity.x < 0.05 && rbPlayer.velocity.y < 0.05 && rbPlayer.velocity.x > -0.05 && rbPlayer.velocity.y > -0.05)
-        {
-            rbPlayer.velocity = new Vector2(0, 0);
-            rbPlayer.drag = 0;
-        }
-        else
-        {
-            rbPlayer.drag = defaultDecelartionRate;
-        }
+        
+
+
+        //if(rbPlayer.velocity.x < 0.05 && rbPlayer.velocity.y < 0.05 && rbPlayer.velocity.x > -0.05 && rbPlayer.velocity.y > -0.05)
+        //{
+        //    rbPlayer.velocity = new Vector2(0, 0);
+        //    rbPlayer.drag = 0;
+        //}
+        //else
+        //{
+        //    rbPlayer.drag = defaultDecelartionRate;
+        //}
     }
 
     void DashPlayer(float deltaHorMove, float deltaVerMove)
@@ -230,6 +238,33 @@ public class cs_PlayerController : MonoBehaviour
         gameManager.playerPucks--;
         gameManager.uiManager.uiPuckCount.text = gameManager.playerPucks.ToString();
     }
+
+    //charge shot
+
+    //Multipuck shot
+    void MultiPuckShotPlayer(int maxPucks)
+    {
+        float distanceFromPlayer = 0.5f;
+        float puckInterval = 0.1f;
+
+        if(gameManager.playerPucks > 1)
+        {
+            Vector2 startPos = transform.right * distanceFromPlayer;
+            int loopInt = 0;
+
+            GameObject emptyReference = new GameObject();
+            GameObject puckHolder = Instantiate(emptyReference, startPos, Quaternion.identity);
+            puckHolder.transform.parent = transform;
+
+
+            foreach (Transform puck in transform)
+            {
+                
+                loopInt++;
+            }
+        }
+    }
+
 
     void PickUpPuckPlayer(GameObject collidedPuck)
     {

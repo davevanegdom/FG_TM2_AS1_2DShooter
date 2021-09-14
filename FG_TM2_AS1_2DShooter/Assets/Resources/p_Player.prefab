@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 7722874631798007874}
   m_Layer: 0
   m_Name: p_Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -248,6 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58bf46240b4798c47bce2d15434715e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
   mCamera: {fileID: 0}
   bulletSpawnPoint: {fileID: 7722874631644877785}
   defaultMoveSpeed: 3
@@ -264,7 +265,7 @@ MonoBehaviour:
   warpTime: 0.15
   minWarpDistance: 0.25
   warpCooldown: 5
-  defaultDecelartionRate: 0.5
+  defaultDecelartionRate: 0.1
   defaultFiringRate: 2
   puckCount: 10
   prefabBullet: {fileID: 8194884428358335612, guid: 96097d827b36e4c4ba8b942886b4a435, type: 3}

@@ -21,6 +21,11 @@ public class cs_PuckGoal : MonoBehaviour
             Destroy(collision.gameObject);
         }
 
+        if(collision.gameObject.tag == "Player")
+        {
+            PickUpPucks();
+            Debug.Log("Player");
+        }
     }
 
     void displayPucks(int pucks)
@@ -29,33 +34,60 @@ public class cs_PuckGoal : MonoBehaviour
         if(transform.childCount > 0)
         {
             //Clear all previous stored pucks
-            foreach (GameObject child in transform)
+            foreach (Transform child in transform)
             {
-                Destroy(child);
+                Destroy(child.gameObject);
             }
         }
 
-        if(pucks == 1)
+        for (int i = 0; i < pucks; i++)
         {
             Instantiate(puckPrefab, transform);
         }
-        else
-        {
-            for (int i = 0; i < pucks; i++)
-            {
-                Instantiate(puckPrefab, transform);
-            }
 
-            float intervalDistance = 0.2f;
-            float length = intervalDistance * pucks;
-            float startPos = transform.position.y - (length / 2);
-            int loopInt = 0;
-            Debug.Log("About to spawn some pucks:" + collectedPucks);
-            foreach(GameObject puck in transform)
-            {
-                puck.transform.position = new Vector2(0, startPos + (loopInt * intervalDistance));
-                loopInt++;
-            }
+        float intervalDistance = 0.1f;
+        float length = intervalDistance * (pucks - 1);
+        float startPos = transform.position.y - length * 1.5f;
+        int loopInt = 0;
+
+        foreach(Transform puck in transform)
+        {
+            puck.transform.position = new Vector2(transform.position.x, startPos + (loopInt * intervalDistance));
+            loopInt++;
+        }
+
+        collectedPucks = pucks;
+
+        switch (TeamGoal)
+        {
+            case teamGoal.blue:
+                gameManager.uiManager.uiBlueTeamPucks.text = collectedPucks.ToString();
+                break;
+            case teamGoal.red:
+                gameManager.uiManager.uiRedTeamPucks.text = collectedPucks.ToString();
+                break;
+        }
+    }
+
+    void PickUpPucks()
+    {
+        gameManager.playerPucks += collectedPucks;
+        gameManager.uiManager.uiPuckCount.text = gameManager.playerPucks.ToString();
+
+        foreach (Transform puck in transform)
+        {
+            Destroy(puck.gameObject);
+        }
+
+        collectedPucks = 0;
+        switch (TeamGoal)
+        {
+            case teamGoal.blue:
+                gameManager.uiManager.uiBlueTeamPucks.text = collectedPucks.ToString();
+                break;
+            case teamGoal.red:
+                gameManager.uiManager.uiRedTeamPucks.text = collectedPucks.ToString();
+                break;
         }
     }
 }

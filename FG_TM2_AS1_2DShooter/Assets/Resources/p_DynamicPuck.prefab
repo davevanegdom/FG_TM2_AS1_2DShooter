@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8194884428358335615}
   - component: {fileID: 8194884428358335614}
   m_Layer: 0
-  m_Name: p_Puck
+  m_Name: p_DynamicPuck
   m_TagString: Puck
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

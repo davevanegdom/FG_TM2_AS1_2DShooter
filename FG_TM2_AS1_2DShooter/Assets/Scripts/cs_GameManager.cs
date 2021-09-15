@@ -68,6 +68,7 @@ public class cs_GameManager : MonoBehaviour
             GameObject player = Instantiate(prefabPlayer, spawnPos, Quaternion.identity);
             playerController = player.GetComponent<cs_PlayerController>();
             playerController.gameManager = this;
+            player.GetComponentInChildren<cs_PickUp>().gameManager = this;
         }
         else
         {

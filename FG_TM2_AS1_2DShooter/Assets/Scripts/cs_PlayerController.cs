@@ -7,7 +7,8 @@ public class cs_PlayerController : MonoBehaviour
     public cs_GameManager gameManager;
     Rigidbody2D rbPlayer;
     [SerializeField] Camera mCamera = null;
-    [SerializeField] private Transform bulletSpawnPoint;
+    [SerializeField] private Transform puckSpawnPoint;
+    private Transform puckHolder;
 
     #region Movement System variables
 
@@ -41,15 +42,6 @@ public class cs_PlayerController : MonoBehaviour
     public enum dashSystem {DashInMovementInputDirection, DashInLookDirection}
     public dashSystem selectedSystem = dashSystem.DashInMovementInputDirection;
 
-    [Header("Warping")]
-    //Warp related declared variables
-    [SerializeField] float defaultWarpDistance = 2;
-    [SerializeField] float warpTime = 0.2f;
-    [SerializeField] float minWarpDistance = 0.25f;
-    [SerializeField] float warpCooldown;
-    private bool canWarp = true;
-    float warpDistance;
-
     [Header("Other")]
     //Decelaration
     [SerializeField] [Range(0, 2)] float defaultDecelartionRate = 0.5f;
@@ -60,8 +52,13 @@ public class cs_PlayerController : MonoBehaviour
     #region Shooting system
     [SerializeField] float defaultFiringRate; //in seconds
     public int puckCount;
-    [SerializeField] GameObject prefabBullet;
+    [SerializeField] GameObject prefabDynamicPuck;
+    [SerializeField] GameObject prefabStaticPuck;
     [SerializeField] float shootForce;
+    [SerializeField] float chargeTime;
+    [SerializeField] float chargeMultiplier = 0.75f;
+
+    private List<GameObject> displayedStaticPucks;
 
     #endregion
 
@@ -73,7 +70,7 @@ public class cs_PlayerController : MonoBehaviour
         moveSpeed = defaultMoveSpeed;
         boostTime = defaultBoostTime;
         turnRate = defaultTurnRate;
-        warpDistance = defaultWarpDistance;
+        displayPuck(1);
     }
 
     // Update is called once per frame
@@ -138,17 +135,24 @@ public class cs_PlayerController : MonoBehaviour
             DashPlayer(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         }
 
-        //Warp
-        if (Input.GetKeyDown(KeyCode.X) && canWarp|| Input.GetKeyDown(KeyCode.Joystick1Button1) && canWarp)
-        {
-            //warp
-            WarpPlayer();
-        }
-
         //Shoot
         if(Input.GetMouseButtonDown(0) && gameManager.playerPucks > 0|| Input.GetKeyDown(KeyCode.Joystick1Button7) && gameManager.playerPucks > 0)
         {
-            ShootPlayer();
+            ShootPlayer(displayedStaticPucks.Count, shootForce);
+        }
+
+
+        if(Input.GetMouseButtonDown(1) && gameManager.playerPucks > 0)
+        {
+            StartCoroutine(chargeShot());
+        }
+
+        if(Input.GetMouseButtonUp(1) && gameManager.playerPucks > 0)
+        {
+            chargeMultiplier = 0.75f;
+            StopCoroutine("chargeShot");
+
+            displayPuck(1);
         }
     }
 
@@ -220,57 +224,86 @@ public class cs_PlayerController : MonoBehaviour
         StartCoroutine(cooldownTimer(0, dashCooldown));
     }
 
-    void WarpPlayer()
-    {
-        Vector2 WarpDir = transform.right * defaultWarpDistance;
-        transform.position = new Vector2(transform.position.x + WarpDir.x, transform.position.y + WarpDir.y);
-        rbPlayer.velocity = rbPlayer.velocity.magnitude * transform.right;
-        canWarp = false;
-        StartCoroutine(cooldownTimer(1, warpCooldown));
-    }
 
-    void ShootPlayer()
+    void ShootPlayer(int pucks, float shootForce)
     {
-        GameObject bullet = Instantiate(prefabBullet, bulletSpawnPoint.position, Quaternion.identity);
-        Vector2 shootDir = new Vector2(transform.position.x + transform.right.x * shootForce, transform.position.y + transform.right.y * shootForce);
-        bullet.GetComponent<Rigidbody2D>().AddForce(shootDir);
-        Debug.DrawLine(transform.position, transform.position + (transform.right * 1), Color.green);
-        gameManager.playerPucks--;
+        List<Vector2> shootDirections = new List<Vector2>();
+
+        foreach (GameObject puck in displayedStaticPucks)
+        {
+            Vector2 shootDir = (puck.transform.position - transform.position).normalized;
+            shootDirections.Add(shootDir);
+            Destroy(puck);
+        }
+
+        foreach (Vector2 direction in shootDirections)
+        {
+            Vector2 shootDir = new Vector2(transform.position.x + direction.x * (shootForce * chargeMultiplier), transform.position.y + direction.y * (shootForce * chargeMultiplier));
+            GameObject puck = Instantiate(prefabDynamicPuck, puckSpawnPoint.position, Quaternion.identity);
+            puck.GetComponent<Rigidbody2D>().AddForce(shootDir);
+            puck.GetComponent<cs_Puck>().player = transform;
+        }
+        chargeMultiplier = 0.75f;
+
+        displayPuck(1);
+
+        gameManager.playerPucks -= shootDirections.Count;
         gameManager.uiManager.uiPuckCount.text = gameManager.playerPucks.ToString();
     }
 
-    //charge shot
-
-    //Multipuck shot
-    void MultiPuckShotPlayer(int maxPucks)
+    void displayPuck(int pucks)
     {
-        float distanceFromPlayer = 0.5f;
-        float puckInterval = 0.1f;
-
-        if(gameManager.playerPucks > 1)
+        if(puckSpawnPoint.childCount > 0)
         {
-            Vector2 startPos = transform.right * distanceFromPlayer;
-            int loopInt = 0;
-
-            GameObject emptyReference = new GameObject();
-            GameObject puckHolder = Instantiate(emptyReference, startPos, Quaternion.identity);
-            puckHolder.transform.parent = transform;
-
-
-            foreach (Transform puck in transform)
+            foreach (GameObject puck in displayedStaticPucks)
             {
-                
-                loopInt++;
+                Destroy(puck);
             }
         }
+        
+        displayedStaticPucks = new List<GameObject>();
+        float puckInterval = 0.2f;
+        float length = 0;
+        float startPos = 0;
+
+        if (pucks > 1)
+        {
+            length = puckInterval * pucks; //* pucks;
+            startPos = (-length / 2) + (puckInterval / 2);
+
+            for (int i = 0; i < pucks; i++)
+            {
+                GameObject staticPuck = Instantiate(prefabStaticPuck, puckSpawnPoint);
+                staticPuck.transform.localPosition = new Vector2(.2f, startPos + puckInterval * i);
+                displayedStaticPucks.Add(staticPuck);
+            }
+        }
+        else
+        {
+            GameObject staticPuck = Instantiate(prefabStaticPuck, puckSpawnPoint);
+            staticPuck.transform.localPosition = new Vector2(.2f, 0);
+            displayedStaticPucks.Add(staticPuck);
+        }
+
     }
 
 
-    void PickUpPuckPlayer(GameObject collidedPuck)
+    public IEnumerator chargeShot()
     {
-        gameManager.playerPucks++;
-        gameManager.uiManager.uiPuckCount.text = gameManager.playerPucks.ToString();
-        Destroy(collidedPuck);
+        float time = 0;
+
+        while (time < chargeTime)
+        {
+            time += Time.deltaTime;
+            chargeMultiplier = Mathf.Lerp(0.75f, 1.25f, time / chargeTime);
+            yield return null;
+        }
+
+        if(gameManager.playerPucks > 2)
+        {
+            //Super Shot
+            displayPuck(gameManager.playerPucks);
+        }
     }
 
     public IEnumerator cooldownTimer(int action, float cooldown)
@@ -288,44 +321,8 @@ public class cs_PlayerController : MonoBehaviour
             case 0:
                 canDash = true;
                 break;
-
-            case 1:
-                canWarp = true;
-                break;
         }
     }
 
-    #region The two seperate timers
-    public IEnumerator dashCooldownTimer()
-    {
-        float time = 0f;
 
-        while (time < dashCooldown)
-        {
-            time += Time.deltaTime;
-            yield return null;
-        }
-        canDash = true;
-    }
-
-    public IEnumerator warpCooldownTimer()
-    {
-        float time = 0f;
-
-        while (time < warpCooldown)
-        {
-            time += Time.deltaTime;
-            yield return null;
-        }
-        canWarp = true;
-    }
-    #endregion
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(collision.gameObject.tag == "Puck")
-        {
-            PickUpPuckPlayer(collision.gameObject);
-        }
-    }
 }

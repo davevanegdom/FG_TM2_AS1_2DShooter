@@ -70,7 +70,7 @@ public class cs_PlayerController : MonoBehaviour
         turnRate = defaultTurnRate;
 
         displayedStaticPucks = new List<GameObject>();
-        displayPuck(1);
+        //displayPuck(1);
     }
 
     // Update is called once per frame
@@ -144,7 +144,6 @@ public class cs_PlayerController : MonoBehaviour
         {
             chargeMultiplier = 0.75f;
             StopCoroutine("chargeShot");
-
             displayPuck(1);
         }
     }
@@ -299,6 +298,4 @@ public class cs_PlayerController : MonoBehaviour
                 break;
         }
     }
-
-
 }

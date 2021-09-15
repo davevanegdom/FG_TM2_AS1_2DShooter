@@ -21,10 +21,9 @@ public class cs_PuckGoal : MonoBehaviour
             Destroy(collision.gameObject);
         }
 
-        if(collision.gameObject.tag == "Player")
+        if(collision.gameObject.tag == "Player" && collectedPucks > 0)
         {
             PickUpPucks();
-            Debug.Log("Player");
         }
     }
 

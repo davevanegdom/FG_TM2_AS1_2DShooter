@@ -2714,7 +2714,7 @@ MonoBehaviour:
   playerPucksInNet: 0
   playerSpawnPoint: {fileID: 1668507358}
   waveInterval: 0
-  savedSeconds: 55
+  savedSeconds: 0
   savedMinutes: 0
   savedHours: 0
 --- !u!4 &1815174726

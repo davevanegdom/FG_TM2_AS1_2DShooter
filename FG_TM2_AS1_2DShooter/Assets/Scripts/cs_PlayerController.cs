@@ -44,10 +44,9 @@ public class cs_PlayerController : MonoBehaviour
 
     [Header("Other")]
     //Decelaration
-    [SerializeField] [Range(0, 2)] float defaultDecelartionRate = 0.5f;
+    [SerializeField] float defaultDecelartionRate;
     //Acceleration
     #endregion
-
 
     #region Shooting system
     [SerializeField] float defaultFiringRate; //in seconds
@@ -59,7 +58,6 @@ public class cs_PlayerController : MonoBehaviour
     [SerializeField] float chargeMultiplier = 0.75f;
 
     private List<GameObject> displayedStaticPucks;
-
     #endregion
 
 
@@ -70,6 +68,8 @@ public class cs_PlayerController : MonoBehaviour
         moveSpeed = defaultMoveSpeed;
         boostTime = defaultBoostTime;
         turnRate = defaultTurnRate;
+
+        displayedStaticPucks = new List<GameObject>();
         displayPuck(1);
     }
 
@@ -120,14 +120,7 @@ public class cs_PlayerController : MonoBehaviour
 
         //Decelaration 
 
-        if (Input.GetAxis("Horizontal") == 0)
-        {
-            DecelaratePlayer(0);
-        }
-        if (Input.GetAxis("Horizontal") == 0)
-        {
-            DecelaratePlayer(1);
-        }
+        DecelaratePlayer();
 
         //Dash
         if (Input.GetKeyDown(KeyCode.Space) && canDash|| Input.GetKeyDown(KeyCode.Joystick1Button10) && canDash)
@@ -167,42 +160,28 @@ public class cs_PlayerController : MonoBehaviour
 
             if (rbPlayer.velocity.magnitude < minMoveSpeed)
             {
-                rbPlayer.AddForce(deltaMove * boostMultiplier * (5 * (1 - (speed / maxMoveSpeed))) * (moveSpeed * 50 * Time.deltaTime));
+                rbPlayer.AddForce(deltaMove * boostMultiplier * ((1 - (speed / maxMoveSpeed))) * (moveSpeed * 50 * Time.deltaTime));
                 Vector2 moveDir = new Vector2(transform.position.x + (rbPlayer.velocity.x * speed), transform.position.y + (rbPlayer.velocity.y * speed));
                 Debug.DrawLine(transform.position, moveDir, Color.red);
             }
-            else
-            {
-                rbPlayer.AddForce(deltaMove * boostMultiplier * (moveSpeed * 50 * Time.deltaTime));
-                Vector2 moveDir = new Vector2(transform.position.x + (rbPlayer.velocity.x * speed), transform.position.y + (rbPlayer.velocity.y * speed));
-                Debug.DrawLine(transform.position, moveDir, Color.red);
-            } 
         }
     }
-
     void LookAtMouse(Vector2 mousePos)
     {
         Vector2 lookAtPos = Camera.main.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y));
         Vector3 desiredDirection = new Vector3(lookAtPos.x - transform.position.x, lookAtPos.y - transform.position.y, 0);
         transform.right = Vector3.Lerp(transform.right, desiredDirection, turnRate * Time.deltaTime);
     }
-
-    void DecelaratePlayer(int axis)
+    void DecelaratePlayer()
     {
-        
+        float decelarationValue = Vector2.Dot(rbPlayer.velocity, new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized);
+        rbPlayer.drag = Mathf.Abs(decelarationValue) * defaultDecelartionRate;
 
-
-        //if(rbPlayer.velocity.x < 0.05 && rbPlayer.velocity.y < 0.05 && rbPlayer.velocity.x > -0.05 && rbPlayer.velocity.y > -0.05)
-        //{
-        //    rbPlayer.velocity = new Vector2(0, 0);
-        //    rbPlayer.drag = 0;
-        //}
-        //else
-        //{
-        //    rbPlayer.drag = defaultDecelartionRate;
-        //}
+        if((Input.GetAxis("Horizontal") > 0.05f || Input.GetAxis("Horizontal") < -0.05f) && (Input.GetAxis("Vertical") > 0.05f || Input.GetAxis("Vertical") < -0.05f))
+        {
+            rbPlayer.drag = defaultDecelartionRate;
+        }
     }
-
     void DashPlayer(float deltaHorMove, float deltaVerMove)
     {
         switch (selectedSystem)
@@ -223,8 +202,6 @@ public class cs_PlayerController : MonoBehaviour
         canDash = false;
         StartCoroutine(cooldownTimer(0, dashCooldown));
     }
-
-
     void ShootPlayer(int pucks, float shootForce)
     {
         List<Vector2> shootDirections = new List<Vector2>();
@@ -235,6 +212,7 @@ public class cs_PlayerController : MonoBehaviour
             shootDirections.Add(shootDir);
             Destroy(puck);
         }
+        Debug.Log(displayedStaticPucks.Count);
 
         foreach (Vector2 direction in shootDirections)
         {
@@ -243,16 +221,17 @@ public class cs_PlayerController : MonoBehaviour
             puck.GetComponent<Rigidbody2D>().AddForce(shootDir);
             puck.GetComponent<cs_Puck>().player = transform;
         }
+
         chargeMultiplier = 0.75f;
 
-        displayPuck(1);
+        displayPuck(1); //if>0
 
         gameManager.playerPucks -= shootDirections.Count;
         gameManager.uiManager.uiPuckCount.text = gameManager.playerPucks.ToString();
     }
-
     void displayPuck(int pucks)
     {
+
         if(puckSpawnPoint.childCount > 0)
         {
             foreach (GameObject puck in displayedStaticPucks)
@@ -286,8 +265,6 @@ public class cs_PlayerController : MonoBehaviour
         }
 
     }
-
-
     public IEnumerator chargeShot()
     {
         float time = 0;
@@ -305,7 +282,6 @@ public class cs_PlayerController : MonoBehaviour
             displayPuck(gameManager.playerPucks);
         }
     }
-
     public IEnumerator cooldownTimer(int action, float cooldown)
     {
         float time = 0f;

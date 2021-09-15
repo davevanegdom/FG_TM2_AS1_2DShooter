@@ -168,7 +168,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7722874631644877784}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.118, y: 0, z: 0}
+  m_LocalPosition: {x: 0.631, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7722874631327424754}
@@ -313,9 +313,9 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   mCamera: {fileID: 0}
   puckSpawnPoint: {fileID: 7722874631644877785}
-  defaultMoveSpeed: 3
-  maxMoveSpeed: 5
-  minMoveSpeed: 1
+  defaultMoveSpeed: 7
+  maxMoveSpeed: 10
+  minMoveSpeed: 10
   defaultBoostMultiplier: 1
   defaultBoostTime: 0
   defaultTurnRate: 20
@@ -323,7 +323,7 @@ MonoBehaviour:
   retainMomentumPercentage: 0.1
   dashCooldown: 1
   selectedSystem: 1
-  defaultDecelartionRate: 0.1
+  defaultDecelartionRate: 1.5
   defaultFiringRate: 2
   puckCount: 10
   prefabDynamicPuck: {fileID: 8194884428358335612, guid: 96097d827b36e4c4ba8b942886b4a435, type: 3}

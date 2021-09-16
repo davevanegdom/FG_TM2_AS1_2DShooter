@@ -22,11 +22,13 @@ public class cs_IceCleaner : MonoBehaviour
         {
             RandomizeCornerTarget();
         }
-
         transform.position = transform.position + (corners[TargetCorner].position - transform.position).normalized * Speed * Time.deltaTime;
+
+        //Smooth rotation in new direction
+
     }
 
-    public void RandomizeCornerTarget()
+    private void RandomizeCornerTarget()
     {
         int OldTarget = TargetCorner;
 

@@ -29,7 +29,7 @@ public class cs_GameManager : MonoBehaviour
     public int savedMinutes = 0;
     public int savedHours = 0;
 
-    private void Start()
+    private void Awake()
     {
         savedSeconds = (savedHours * 3600) + (savedMinutes * 60) + savedSeconds;
         startGame(playerLifes, playerPucks, waveIndex);

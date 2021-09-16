@@ -51,7 +51,7 @@ public class cs_PuckGoal : MonoBehaviour
 
         foreach(Transform puck in transform)
         {
-            puck.transform.position = new Vector2(transform.position.x, startPos + (loopInt * intervalDistance));
+            puck.transform.position = new Vector2(transform.position.x + (transform.position.x/Mathf.Abs(transform.position.x) * - 0.175f), startPos + (loopInt * intervalDistance));
             loopInt++;
         }
 

@@ -5,24 +5,23 @@ using UnityEngine;
 public class cs_CameraShake : MonoBehaviour
 {
 
-    public Camera MainCam;
+    private Camera MainCam;
 
-    float shakeAmount = 0;
+    public float shakeAmount = 0;
    
 
 
     // Update is called once per frame
     void Awake()
     {
-        if (MainCam == null)
-           MainCam = Camera.main;
+        MainCam = Camera.main;
     }
 
     private void LateUpdate()
     {
         if (Input.GetKeyDown(KeyCode.T))
         {
-            Shake(0.1f, 0.2f);
+            Shake(shakeAmount, shakeAmount);
         }
     }
 
@@ -41,16 +40,16 @@ public class cs_CameraShake : MonoBehaviour
             float OffsetX = Random.value * shakeAmount * 2 - shakeAmount;
             float OffsetY = Random.value * shakeAmount * 2 - shakeAmount;
             camPos.x += OffsetX;
-            camPos.x += OffsetY;
+            camPos.y += OffsetY;
 
-            MainCam.transform.position = camPos;
+            MainCam.transform.position = new Vector3(camPos.x, camPos.y, MainCam.transform.position.z);
         }
     }
 
     void StopShake()
     {
         CancelInvoke("BeginShake");
-        MainCam.transform.localPosition = Vector3.zero;
+       
     }
 }
 

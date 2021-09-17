@@ -6,6 +6,7 @@ TagManager:
   tags:
   - UI Holder
   - Puck
+  - GameManager
   layers:
   - Default
   - TransparentFX

@@ -5,6 +5,8 @@ using UnityEngine;
 public class cs_PlayerController : MonoBehaviour
 {
     public cs_GameManager gameManager;
+    public bool gameisActive;
+
     Rigidbody2D rbPlayer;
     [SerializeField] Camera mCamera = null;
     [SerializeField] private Transform puckSpawnPoint;
@@ -68,7 +70,7 @@ public class cs_PlayerController : MonoBehaviour
         moveSpeed = defaultMoveSpeed;
         boostTime = defaultBoostTime;
         turnRate = defaultTurnRate;
-
+        gameisActive = true;
         displayedStaticPucks = new List<GameObject>();
         //displayPuck(1);
     }
@@ -76,76 +78,79 @@ public class cs_PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        //MovePlayer Variables
+        if (gameisActive)
         {
-            float deltaVerMove = 0f; 
-            float deltaHorMove = 0f;
-            float boostMultiplier = defaultBoostMultiplier;
-
-            #region MovementInput
-            //Input from the vertical input axis (W & S, Up and Down arrrow, etc)
-            if (Input.GetAxis("Vertical") != 0)
+            //MovePlayer Variables
             {
-                deltaVerMove = Input.GetAxis("Vertical");
-            }
-            
+                float deltaVerMove = 0f;
+                float deltaHorMove = 0f;
+                float boostMultiplier = defaultBoostMultiplier;
 
-            //Input from the horizontal input axis (A & D, Left and Right arrrow, etc)
-            if (Input.GetAxis("Horizontal") != 0)
+                #region MovementInput
+                //Input from the vertical input axis (W & S, Up and Down arrrow, etc)
+                if (Input.GetAxis("Vertical") != 0)
+                {
+                    deltaVerMove = Input.GetAxis("Vertical");
+                }
+
+
+                //Input from the horizontal input axis (A & D, Left and Right arrrow, etc)
+                if (Input.GetAxis("Horizontal") != 0)
+                {
+                    deltaHorMove = Input.GetAxis("Horizontal");
+                }
+
+
+
+                if (Input.GetKeyDown(KeyCode.LeftShift))
+                {
+                    isBoosting = true;
+                    boostMultiplier = defaultBoostMultiplier * 2;
+                }
+
+                if (Input.GetKeyUp(KeyCode.LeftShift))
+                {
+                    isBoosting = false;
+                    boostMultiplier = defaultBoostMultiplier;
+                }
+                #endregion
+
+                MovePlayer(deltaHorMove, deltaVerMove, boostMultiplier);
+            }
+
+            //Look at mouse position
+            LookAtMouse(Input.mousePosition);
+
+            //Decelaration 
+
+            DecelaratePlayer();
+
+            //Dash
+            if (Input.GetKeyDown(KeyCode.Space) && canDash || Input.GetKeyDown(KeyCode.Joystick1Button10) && canDash)
             {
-                deltaHorMove = Input.GetAxis("Horizontal");
+                DashPlayer(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             }
-            
-            
 
-            if (Input.GetKeyDown(KeyCode.LeftShift))
+            //Shoot
+            if (Input.GetMouseButtonDown(0) && gameManager.playerPucks > 0 || Input.GetKeyDown(KeyCode.Joystick1Button7) && gameManager.playerPucks > 0)
             {
-                isBoosting = true;
-                boostMultiplier = defaultBoostMultiplier * 2;
+                ShootPlayer(displayedStaticPucks.Count, shootForce);
             }
 
-            if (Input.GetKeyUp(KeyCode.LeftShift))
+
+            if (Input.GetMouseButtonDown(1) && gameManager.playerPucks > 0)
             {
-                isBoosting = false;
-                boostMultiplier = defaultBoostMultiplier;
+                StartCoroutine(chargeShot());
             }
-            #endregion
 
-            MovePlayer(deltaHorMove, deltaVerMove, boostMultiplier);
+            if (Input.GetMouseButtonUp(1) && gameManager.playerPucks > 0)
+            {
+                chargeMultiplier = 0.75f;
+                StopCoroutine("chargeShot");
+                displayPuck(1);
+            }
         }
-
-        //Look at mouse position
-        LookAtMouse(Input.mousePosition);
-
-        //Decelaration 
-
-        DecelaratePlayer();
-
-        //Dash
-        if (Input.GetKeyDown(KeyCode.Space) && canDash|| Input.GetKeyDown(KeyCode.Joystick1Button10) && canDash)
-        {
-            DashPlayer(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        }
-
-        //Shoot
-        if(Input.GetMouseButtonDown(0) && gameManager.playerPucks > 0|| Input.GetKeyDown(KeyCode.Joystick1Button7) && gameManager.playerPucks > 0)
-        {
-            ShootPlayer(displayedStaticPucks.Count, shootForce);
-        }
-
-
-        if(Input.GetMouseButtonDown(1) && gameManager.playerPucks > 0)
-        {
-            StartCoroutine(chargeShot());
-        }
-
-        if(Input.GetMouseButtonUp(1) && gameManager.playerPucks > 0)
-        {
-            chargeMultiplier = 0.75f;
-            StopCoroutine("chargeShot");
-            displayPuck(1);
-        }
+        
     }
 
     void MovePlayer(float deltaHorMove, float deltaVerMove, float boostMultiplier)

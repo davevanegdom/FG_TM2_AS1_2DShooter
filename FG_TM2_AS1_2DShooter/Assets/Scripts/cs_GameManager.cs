@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class cs_GameManager : MonoBehaviour
 {
     [SerializeField] GameObject prefabPlayer;
-    cs_PlayerController playerController;
+    public cs_PlayerController playerController;
     public cs_UIManager uiManager;
     private bool gameIsActive = true;
 

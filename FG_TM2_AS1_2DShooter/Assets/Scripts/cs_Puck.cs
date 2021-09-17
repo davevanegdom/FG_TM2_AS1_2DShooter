@@ -42,7 +42,7 @@ public class cs_Puck : MonoBehaviour
         else
         {
             pulseScript.isPlaying = false;
-            if (!puckTrail.enabled) puckTrail.enabled = true;
+            if (!puckTrail.enabled)puckTrail.enabled = true;
         }
     }
 

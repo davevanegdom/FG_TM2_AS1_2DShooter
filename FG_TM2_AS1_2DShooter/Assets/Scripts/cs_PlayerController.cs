@@ -15,7 +15,7 @@ public class cs_PlayerController : MonoBehaviour
     [Header("Movement")]
     //Movement related declared variables
     [SerializeField] float defaultMoveSpeed = 2;
-    [SerializeField] float maxMoveSpeed;
+    public float maxMoveSpeed;
     [SerializeField] float minMoveSpeed;
     float moveSpeed;
 
@@ -56,6 +56,7 @@ public class cs_PlayerController : MonoBehaviour
     [SerializeField] float shootForce;
     [SerializeField] float chargeTime;
     [SerializeField] float chargeMultiplier = 0.75f;
+    Coroutine co;
 
     private List<GameObject> displayedStaticPucks;
     #endregion
@@ -137,13 +138,13 @@ public class cs_PlayerController : MonoBehaviour
 
         if(Input.GetMouseButtonDown(1) && gameManager.playerPucks > 0)
         {
-            StartCoroutine(chargeShot());
+            co = StartCoroutine(chargeShot());
         }
 
         if(Input.GetMouseButtonUp(1) && gameManager.playerPucks > 0)
         {
             chargeMultiplier = 0.75f;
-            StopCoroutine("chargeShot");
+            StopCoroutine(co);
             displayPuck(1);
         }
     }
@@ -252,14 +253,14 @@ public class cs_PlayerController : MonoBehaviour
             for (int i = 0; i < pucks; i++)
             {
                 GameObject staticPuck = Instantiate(prefabStaticPuck, puckSpawnPoint);
-                staticPuck.transform.localPosition = new Vector2(.2f, startPos + puckInterval * i);
+                staticPuck.transform.localPosition = new Vector2(.05f, startPos + puckInterval * i);
                 displayedStaticPucks.Add(staticPuck);
             }
         }
         else
         {
             GameObject staticPuck = Instantiate(prefabStaticPuck, puckSpawnPoint);
-            staticPuck.transform.localPosition = new Vector2(.2f, 0);
+            staticPuck.transform.localPosition = new Vector2(.05f, 0);
             displayedStaticPucks.Add(staticPuck);
         }
 
@@ -297,5 +298,10 @@ public class cs_PlayerController : MonoBehaviour
                 canDash = true;
                 break;
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        cs_CinemachineCamera.Instance.ShakeCamera(rbPlayer.velocity.magnitude/2, 0.2f);
     }
 }

@@ -90,14 +90,6 @@ public class cs_PuckGoal : MonoBehaviour
 
         collectedPucks = 0;
         numberDisplay.text = collectedPucks.ToString();
-        switch (TeamGoal)
-        {
-            case teamGoal.blue:
-                gameManager.uiManager.uiBlueTeamPucks.text = collectedPucks.ToString();
-                break;
-            case teamGoal.red:
-                gameManager.uiManager.uiRedTeamPucks.text = collectedPucks.ToString();
-                break;
-        }
+        
     }
 }

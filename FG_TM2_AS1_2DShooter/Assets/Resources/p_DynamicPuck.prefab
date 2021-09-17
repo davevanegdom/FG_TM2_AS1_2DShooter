@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee517373186a0cf4192a81b175fdd5d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetTime: 2
+  targetTime: 1
   size: 5
   isPlaying: 0
 --- !u!1 &8194884428358335612

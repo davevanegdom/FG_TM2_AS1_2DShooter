@@ -9,8 +9,12 @@ public class cs_Puck : MonoBehaviour
     private ParticleSystem pulseEffect;
     private TrailRenderer puckTrail;
     private CircleCollider2D puckCollider;
+    private cs_PuckPulseEffect pulseScript;
+
     public Transform player;
     public float pickUpDistance = 0.25f;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -19,6 +23,7 @@ public class cs_Puck : MonoBehaviour
         pulseEffect = GetComponent<ParticleSystem>();
         puckTrail = GetComponent<TrailRenderer>();
         puckCollider = GetComponent<CircleCollider2D>();
+        pulseScript = GetComponentInChildren<cs_PuckPulseEffect>();
         puckCollider.enabled = false;
     }
 
@@ -29,20 +34,16 @@ public class cs_Puck : MonoBehaviour
             EnableCollision();
         }
 
-        //if(rbPuck.velocity.magnitude < 1 && puckTrail.enabled)// && !pulseEffect.isPlaying && puckTrail.enabled)
-        //{
-        //    pulseEffect.Play();
-        //    puckTrail.enabled = false;
-        //    Debug.Log("Play Effect");
-        //}
-        //else
-        //{
-        //    if(pulseEffect.isPlaying && !puckTrail.enabled)
-        //    {
-        //        pulseEffect.Stop();
-        //        puckTrail.enabled = true;
-        //    }
-        //}
+        if (rbPuck.velocity.magnitude < 1)// && !pulseEffect.isPlaying && puckTrail.enabled)
+        {
+            pulseScript.isPlaying = true;
+            if(puckTrail.enabled)puckTrail.enabled = false;
+        }
+        else
+        {
+            pulseScript.isPlaying = false;
+            if (!puckTrail.enabled) puckTrail.enabled = true;
+        }
     }
 
     void EnableCollision()
@@ -57,4 +58,6 @@ public class cs_Puck : MonoBehaviour
             Debug.Log("Spawn Wall Hit effect");
         }
     }
+
+
 }

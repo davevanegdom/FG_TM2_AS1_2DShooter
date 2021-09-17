@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class cs_PuckGoal : MonoBehaviour
 {
@@ -11,7 +12,14 @@ public class cs_PuckGoal : MonoBehaviour
     public int collectedPucks;
     public int maxCollectablePucks;
 
+    [SerializeField] private Text numberDisplay;
     [SerializeField] cs_GameManager gameManager;
+
+    private void Start()
+    {
+        numberDisplay.text = "0";
+        numberDisplay.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, transform.position.normalized.x * 90));
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -35,7 +43,10 @@ public class cs_PuckGoal : MonoBehaviour
             //Clear all previous stored pucks
             foreach (Transform child in transform)
             {
-                Destroy(child.gameObject);
+                if (child.GetSiblingIndex() > 0)
+                {
+                    Destroy(child.gameObject);
+                }
             }
         }
 
@@ -44,28 +55,23 @@ public class cs_PuckGoal : MonoBehaviour
             Instantiate(puckPrefab, transform);
         }
 
-        float intervalDistance = 0.1f;
+        float intervalDistance = 0.15f;
         float length = intervalDistance * (pucks - 1);
         float startPos = transform.position.y - length * 1.5f;
         int loopInt = 0;
 
         foreach(Transform puck in transform)
         {
-            puck.transform.position = new Vector2(transform.position.x + (transform.position.x/Mathf.Abs(transform.position.x) * - 0.175f), startPos + (loopInt * intervalDistance));
-            loopInt++;
+            if (puck.GetSiblingIndex() > 0)
+            {
+                puck.transform.position = new Vector2((transform.position.x + transform.position.normalized.x * -0.175f), startPos + (loopInt * intervalDistance));
+                loopInt++;
+            }
+            
         }
 
         collectedPucks = pucks;
-
-        switch (TeamGoal)
-        {
-            case teamGoal.blue:
-                gameManager.uiManager.uiBlueTeamPucks.text = collectedPucks.ToString();
-                break;
-            case teamGoal.red:
-                gameManager.uiManager.uiRedTeamPucks.text = collectedPucks.ToString();
-                break;
-        }
+        numberDisplay.text = collectedPucks.ToString();
     }
 
     void PickUpPucks()
@@ -75,10 +81,15 @@ public class cs_PuckGoal : MonoBehaviour
 
         foreach (Transform puck in transform)
         {
-            Destroy(puck.gameObject);
+            if(puck.GetSiblingIndex() > 0)
+            {
+                Destroy(puck.gameObject);
+            }
+            
         }
 
         collectedPucks = 0;
+        numberDisplay.text = collectedPucks.ToString();
         switch (TeamGoal)
         {
             case teamGoal.blue:

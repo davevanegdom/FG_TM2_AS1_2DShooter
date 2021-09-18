@@ -220,18 +220,21 @@ public class cs_PlayerController : MonoBehaviour
             GameObject puck = Instantiate(prefabDynamicPuck, puckSpawnPoint.position, Quaternion.identity);
             puck.GetComponent<Rigidbody2D>().AddForce(shootDir);
             puck.GetComponent<cs_Puck>().player = transform;
+            puck.GetComponent<cs_PickUp>().gameManager = gameManager;
         }
 
         chargeMultiplier = 0.75f;
 
-        displayPuck(1); //if>0
-
         gameManager.playerPucks -= shootDirections.Count;
         gameManager.uiManager.uiPuckCount.text = gameManager.playerPucks.ToString();
-    }
-    void displayPuck(int pucks)
-    {
 
+        if (gameManager.playerPucks > 0)
+        {
+            displayPuck(1);
+        }
+    }
+    public void displayPuck(int pucks)
+    {
         if(puckSpawnPoint.childCount > 0)
         {
             foreach (GameObject puck in displayedStaticPucks)
@@ -262,8 +265,9 @@ public class cs_PlayerController : MonoBehaviour
             GameObject staticPuck = Instantiate(prefabStaticPuck, puckSpawnPoint);
             staticPuck.transform.localPosition = new Vector2(.05f, 0);
             displayedStaticPucks.Add(staticPuck);
-        }
 
+            Debug.Log("Display Pucks");
+        }
     }
     public IEnumerator chargeShot()
     {

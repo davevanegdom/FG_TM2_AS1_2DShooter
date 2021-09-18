@@ -1011,13 +1011,17 @@ PrefabInstance:
       propertyPath: gameManager
       value: 
       objectReference: {fileID: 1815174725}
+    - target: {fileID: 2463364660632076710, guid: 7ffbc47136d37d54da42d681fd477a37, type: 3}
+      propertyPath: maxCollectablePucks
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 2463364660632076715, guid: 7ffbc47136d37d54da42d681fd477a37, type: 3}
       propertyPath: m_Name
       value: p_Goal
       objectReference: {fileID: 0}
     - target: {fileID: 4642457253890677695, guid: 7ffbc47136d37d54da42d681fd477a37, type: 3}
       propertyPath: m_SortingOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ffbc47136d37d54da42d681fd477a37, type: 3}
@@ -2083,13 +2087,17 @@ PrefabInstance:
       propertyPath: gameManager
       value: 
       objectReference: {fileID: 1815174725}
+    - target: {fileID: 2463364660632076710, guid: 7ffbc47136d37d54da42d681fd477a37, type: 3}
+      propertyPath: maxCollectablePucks
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 2463364660632076715, guid: 7ffbc47136d37d54da42d681fd477a37, type: 3}
       propertyPath: m_Name
       value: p_Goal (1)
       objectReference: {fileID: 0}
     - target: {fileID: 4642457253890677695, guid: 7ffbc47136d37d54da42d681fd477a37, type: 3}
       propertyPath: m_SortingOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ffbc47136d37d54da42d681fd477a37, type: 3}
@@ -2863,10 +2871,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 5.25, y: 2.5}
-      - {x: -5.25, y: 2.55}
-      - {x: -5.25, y: -2.9}
-      - {x: 5.25, y: -2.9}
+    - - {x: 6.3, y: 3}
+      - {x: -6.3, y: 3}
+      - {x: -6.3, y: -3.45}
+      - {x: 6.3, y: -3.45}
 --- !u!1 &853156973
 GameObject:
   m_ObjectHideFlags: 0
@@ -5629,8 +5637,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camMinSize: 2
-  camMaxSize: 4
-  smoothRate: 2
+  camMaxSize: 3.5
+  smoothRate: 1
   shakeTimer: 0
 --- !u!114 &1629935464
 MonoBehaviour:
@@ -6444,15 +6452,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TrackedObjectOffset: {x: 0, y: 0, z: 0}
-  m_LookaheadTime: 1
+  m_LookaheadTime: 0.5
   m_LookaheadSmoothing: 2.5
   m_LookaheadIgnoreY: 0
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
   m_TargetMovementOnly: 1
-  m_ScreenX: 0.5026008
-  m_ScreenY: 0.5023866
+  m_ScreenX: 0.5
+  m_ScreenY: 0.5
   m_CameraDistance: 10
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0

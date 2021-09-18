@@ -6,16 +6,17 @@ public class cs_PickUp : MonoBehaviour
 {
     public cs_GameManager gameManager;
 
-    void PickUpPuckPlayer(GameObject collidedPuck)
+    void PickUpPuckPlayer(GameObject player)
     {
         gameManager.playerPucks++;
         gameManager.uiManager.uiPuckCount.text = gameManager.playerPucks.ToString();
-        Destroy(collidedPuck);
+        player.GetComponent<cs_PlayerController>().displayPuck(1);
+        Destroy(gameObject);
     }
-
+    
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Puck")
+        if (collision.gameObject.tag == "Player")
         {
             PickUpPuckPlayer(collision.gameObject);
         }

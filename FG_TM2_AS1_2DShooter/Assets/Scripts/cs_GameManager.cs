@@ -10,6 +10,7 @@ public class cs_GameManager : MonoBehaviour
     public cs_UIManager uiManager;
     private bool gameIsActive = true;
 
+    #region Player
     [Header("Player")]
     public int playerLifes;
     [SerializeField] Transform playerLifesPanel;
@@ -18,16 +19,21 @@ public class cs_GameManager : MonoBehaviour
     public int playerPucks;
     public int playerPucksInNet;
     [SerializeField] Transform playerSpawnPoint;
+    #endregion
 
+    #region Wave system
     [Header("Enemy Waves")]
     [SerializeField] private float waveInterval;
     private int waveIndex;
     private int waveProgress;
+    #endregion
 
+    #region UI
     [Header("UI")]
     public int savedSeconds = 0;
     public int savedMinutes = 0;
     public int savedHours = 0;
+    #endregion
 
     private void Awake()
     {
@@ -68,7 +74,6 @@ public class cs_GameManager : MonoBehaviour
             GameObject player = Instantiate(prefabPlayer, spawnPos, Quaternion.identity);
             playerController = player.GetComponent<cs_PlayerController>();
             playerController.gameManager = this;
-            player.GetComponentInChildren<cs_PickUp>().gameManager = this;
         }
         else
         {

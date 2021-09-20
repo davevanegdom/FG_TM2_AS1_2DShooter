@@ -9,6 +9,7 @@ public class cs_PauseMenu : MonoBehaviour
    public static bool GameIsPaused = false;
     public GameObject PauseMenuUI;
     public cs_GameManager gameManager;
+    
 
     private void Start()
     {
@@ -58,5 +59,6 @@ public class cs_PauseMenu : MonoBehaviour
         Application.Quit();
     }
 
+   
 }
 

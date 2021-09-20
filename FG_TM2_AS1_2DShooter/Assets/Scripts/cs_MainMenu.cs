@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class cs_MainMenu : MonoBehaviour
 {
+    public AudioSource OpenMenu;
     public void QuitGame()
         {
         Application.Quit();
@@ -15,5 +16,10 @@ public class cs_MainMenu : MonoBehaviour
         SceneManager.LoadScene("IceHockeyGameSceneAfterMerge");
         Time.timeScale = 1f;
         }
-}
+
+    public void PlaySound()
+         {
+        OpenMenu.Play();
+         }
+    }
  

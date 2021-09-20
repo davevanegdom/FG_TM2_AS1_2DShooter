@@ -14,4 +14,16 @@ public class cs_UIManager : MonoBehaviour
     public Text uiGameTimer;
     public Text uiPuckCount;
 
+    public void waveUI(int wave)
+    {
+        uiWaveIndex.text = "WAVE " + wave;
+    }
+    private void OnEnable()
+    {
+        cs_WaveManager.setWaveIndex += waveUI;
+    }
+    private void OnDisable()
+    {
+        cs_WaveManager.setWaveIndex -= waveUI;
+    }
 }

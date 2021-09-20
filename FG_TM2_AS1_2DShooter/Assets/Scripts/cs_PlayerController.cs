@@ -6,6 +6,7 @@ public class cs_PlayerController : MonoBehaviour
 {
     public cs_GameManager gameManager;
     Rigidbody2D rbPlayer;
+    SpriteRenderer srPlayer;
     [SerializeField] Camera mCamera = null;
     [SerializeField] private Transform puckSpawnPoint;
     private Transform puckHolder;
@@ -69,6 +70,9 @@ public class cs_PlayerController : MonoBehaviour
         moveSpeed = defaultMoveSpeed;
         boostTime = defaultBoostTime;
         turnRate = defaultTurnRate;
+
+        srPlayer = GetComponent<SpriteRenderer>();
+        srPlayer.size = new Vector2(.1f, .1f);
 
         displayedStaticPucks = new List<GameObject>();
         //displayPuck(1);

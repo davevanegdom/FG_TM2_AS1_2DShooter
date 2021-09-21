@@ -64,12 +64,20 @@ public class cs_WaveManager : MonoBehaviour
     #region Subscribing/Unsubscribing
     private void OnEnable()
     {
-        cs_Enemy.onEnemyKilled += WaveStart;
+        //cs_Enemy.onEnemyKilled += WaveStart;
     }
 
     private void OnDisable()
     {
-        cs_Enemy.onEnemyKilled -= WaveStart;
+        //cs_Enemy.onEnemyKilled -= WaveStart;
     }
     #endregion 
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            WaveStart(waveIndex);
+        }
+    }
 }

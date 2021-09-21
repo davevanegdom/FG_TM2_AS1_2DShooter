@@ -17,8 +17,9 @@ public class cs_WaveController : MonoBehaviour
         waveIndex = newWaveIndex;
         enemiesToSpawn = enemiesCount;
         waveTime = newWaveTime;
-        //timeInterval = newWaveTime / enemiesCount;
-        StartCoroutine(spawnTimer(timeInterval));
+        timeInterval = waveTime / enemiesToSpawn;
+        spawnEnemy();
+        StartCoroutine(WaveTimer(waveTime));
 
         Debug.Log("Wave " + waveIndex + ": spawn " + enemiesCount + " enemies over the course of the next " + newWaveTime + " seconds");
     }
@@ -27,14 +28,14 @@ public class cs_WaveController : MonoBehaviour
     {
         //Spawn player at the given point
         Instantiate(enemyPrefab, enemySpawnPosition(), Quaternion.identity);
-        //timeInterval = waveTime / enemiesToSpawn;
+        timeInterval = waveTime / enemiesToSpawn;
         StartCoroutine(spawnTimer(timeInterval));
     }
 
     //Get a point on an edge collider
     Vector2 enemySpawnPosition()
     {
-        RaycastHit2D hit = Physics2D.Raycast(new Vector2(0, -0.2f), new Vector2((UnityEngine.Random.Range(-2, 2)), (UnityEngine.Random.Range(-2, 2))), 100f, spawnLayer);
+        RaycastHit2D hit = Physics2D.Raycast(new Vector2(0, -0.2f), new Vector2((UnityEngine.Random.Range(-2f, 2f)), (UnityEngine.Random.Range(-2f, 2f))), 100f, spawnLayer);
 
         if(hit.collider == null)
         {
@@ -54,6 +55,19 @@ public class cs_WaveController : MonoBehaviour
         }
         //spawn Enemy
         spawnEnemy();
+    }
+
+    public IEnumerator WaveTimer(float waveTimer)
+    {
+        float time = waveTimer;
+
+        while(time > 0)
+        {
+            time -= Time.deltaTime;
+            yield return null;
+        }
+        Debug.Log("Wave Ended");
+        StopAllCoroutines();
     }
 
     private void OnEnable()

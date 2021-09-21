@@ -9,47 +9,59 @@ public class cs_MusicPlayer : MonoBehaviour
     public AudioSource Fullsong;
     public AudioSource Loopsong;
 
-    public bool soundtrack = true;
-    public bool loop = false;
+    public bool started;
+    bool disable;
+    public static cs_MusicPlayer instance;
 
-    private void Awake()
+    private void Start()
     {
-        DontDestroyOnLoad(transform.gameObject);
-        Invoke("audioFinished", Fullsong.clip.length);
-        }
-
-    void audioFinished()
-    {
-        Debug.Log("Audio Finished");
-    }
-    public void Nonloop()
-    {
-        soundtrack = true;
-        loop = false;
-        Fullsong.Play();
-    }
-
-    public void Loop()
-    {
-        if (Fullsong.isPlaying)
-            soundtrack = false;
+        if (!instance)
         {
-            Fullsong.Stop();
+            instance = this;
+            DontDestroyOnLoad(gameObject);    
         }
-        if  (!Loopsong.isPlaying && loop == false)
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void Update()
+    {
+        if (!disable && !Fullsong.isPlaying && !Loopsong.isPlaying)
+        {
+            if (!started)
+            {
+                Fullsong.Play();
+                started = true;
+            
+            }
+            else
+            {
+                Loopsong.Play();
+                //Loopsong.loop = true;
+                disable = true;
+                //enabled = false;
+            }
+
+        }
+    }
+
+    IEnumerator WaitForSong()
+    {
+        if(!started)
+        {
+            Fullsong.Play();
+            started = true;
+            yield return new WaitForSeconds(Fullsong.clip.length);
+            StartCoroutine(WaitForSong());
+        }
+        else
         {
             Loopsong.Play();
-            loop = true;
+            yield return new WaitForSeconds(Loopsong.clip.length);
+            StartCoroutine(WaitForSong());
         }
-    }
-
-    private void Update()
-    {
-        if (!Fullsong.isPlaying)
-        {
-            Loopsong.Play();
-        }
-
     }
 
 

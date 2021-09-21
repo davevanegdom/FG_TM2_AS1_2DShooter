@@ -12,6 +12,10 @@ public class cs_PlayerController : MonoBehaviour
     [SerializeField] private Transform puckSpawnPoint;
     private Transform puckHolder;
 
+    [SerializeField] AudioSource shootSound;
+    [SerializeField] AudioSource chargeshotSound;
+    [SerializeField] AudioSource chargingSound;
+
     #region Movement System variables
 
     [Header("Movement")]
@@ -141,6 +145,7 @@ public class cs_PlayerController : MonoBehaviour
             if (Input.GetMouseButtonDown(1) && gameManager.playerPucks > 0)
             {
                 StartCoroutine(chargeShot());
+                chargingSound.Play();
             }
 
             if (Input.GetMouseButtonUp(1) && gameManager.playerPucks > 0)
@@ -148,6 +153,7 @@ public class cs_PlayerController : MonoBehaviour
                 chargeMultiplier = 0.75f;
                 StopCoroutine("chargeShot");
                 displayPuck(1);
+                chargingSound.Stop();
             }
         }
         
@@ -209,6 +215,7 @@ public class cs_PlayerController : MonoBehaviour
     void ShootPlayer(int pucks, float shootForce)
     {
         List<Vector2> shootDirections = new List<Vector2>();
+        shootSound.Play();
 
         foreach (GameObject puck in displayedStaticPucks)
         {
@@ -283,6 +290,7 @@ public class cs_PlayerController : MonoBehaviour
         if(gameManager.playerPucks > 2)
         {
             //Super Shot
+            chargeshotSound.Play();
             displayPuck(gameManager.playerPucks);
         }
     }

@@ -154,6 +154,8 @@ public class cs_PlayerController : MonoBehaviour
                 StopCoroutine("chargeShot");
                 displayPuck(1);
                 chargingSound.Stop();
+                chargeshotSound.Play();
+
             }
         }
         
@@ -290,7 +292,6 @@ public class cs_PlayerController : MonoBehaviour
         if(gameManager.playerPucks > 2)
         {
             //Super Shot
-            chargeshotSound.Play();
             displayPuck(gameManager.playerPucks);
         }
     }

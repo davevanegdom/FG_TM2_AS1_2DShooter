@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 429563711917391540}
   m_Layer: 9
   m_Name: p_Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,20 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5152ac7093c522408d4073ea42aff55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveIndex: 0
-  tPlayer: {fileID: 0}
-  moveSpeed: 100
-  targetPercentage: 1
-  movementLayer:
-    serializedVersion: 2
-    m_Bits: 512
-  randomRadius: 1
-  canShoot: 0
-  shootPrefabs: []
-  shootingRange: 4
-  shootingAccuracy: 0
-  shootSpeed: 0
-  shootCooldown: 5
+  moveSpeed: 15
+  hitRange: 0.25
 --- !u!50 &429563711917391547
 Rigidbody2D:
   serializedVersion: 4

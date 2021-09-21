@@ -5,134 +5,79 @@ using System;
 
 public class cs_Enemy : MonoBehaviour
 {
-    public static event Action<int> onEnemyKilled;
+    GameObject player;
+    Rigidbody2D rbPlayer;
+    Rigidbody2D rbEnemy;
 
-    [HideInInspector]
-    public int waveIndex;
+    public float moveSpeed;
+    public float hitRange;
 
-
-    private Rigidbody2D rbEnemy;
     private bool enteredArena = false;
-    private bool moveToPlayer = false;
-    private Vector2 targetPos;
-
-    [SerializeField] Transform tPlayer;
-    [SerializeReference] float moveSpeed;
-    [SerializeField] [Range(0, 1)] float targetPercentage;
-    [SerializeField] LayerMask movementLayer;
-    [SerializeField] float randomRadius;
-
-    public bool canShoot;
-    public List<GameObject> shootPrefabs;
-    [SerializeField] float shootingRange;
-    [SerializeField] float shootingAccuracy;
-    [SerializeField] float shootSpeed;
-    [SerializeField] int shootCooldown;
-    private Vector2 shootPos;
-
 
     private void Start()
     {
-        tPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        player = GameObject.FindGameObjectWithTag("Player");
         rbEnemy = GetComponent<Rigidbody2D>();
-        MoveToArena();
+        rbPlayer = player.GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
         MoveEnemy();
+        AttackPlayer();
+
     }
 
-    #region Movement
     void MoveEnemy()
+    {
+        if (enteredArena)
         {
-            targetPos = Vector2.one;
+            Vector2 playerPos = new Vector2(rbPlayer.velocity.x + player.transform.position.x, rbPlayer.velocity.y + player.transform.position.y);
+            Vector2 randomPos = UnityEngine.Random.insideUnitCircle * rbPlayer.velocity.magnitude;
+            Vector2 followPos = new Vector2(playerPos.x + randomPos.x, playerPos.y + randomPos.y);
 
-            Vector2 moveDir = (targetPos - (Vector2)transform.position).normalized;
-            rbEnemy.velocity = moveDir * moveSpeed * Time.deltaTime;
+            Vector2 moveDir = new Vector2(followPos.x - transform.position.x, followPos.y - transform.position.y).normalized;
+            rbEnemy.velocity = moveDir * moveSpeed * 10 * Time.deltaTime;
+            //Debug.DrawLine(transform.position, new  Vector2(rbEnemy.velocity.x + transform.position.x, rbEnemy.velocity.y + transform.position.y), Color.green);
 
-            if(Vector2.Distance(transform.position,  targetPos) < 0.1f)
-            {
-                if (enteredArena)
-                {
-                    CheckPath();
-                }
-                else
-                {
-                    enteredArena = true;
-                }
-            }
+            transform.right = player.transform.position - transform.position;
         }
-
-    void MoveToArena()
+        else
         {
-            targetPos = (Vector2.zero - (Vector2)transform.position).normalized;
-            moveToPlayer = false;
+            Vector2 moveDir = new Vector2(0 - transform.position.x, 0 - transform.position.y).normalized;
+            rbEnemy.velocity = moveDir * moveSpeed * 10 * Time.deltaTime; 
         }
+        
+    }
 
-    void CheckPath()
+    void AttackPlayer()
+    {
+        if(Vector2.Distance(player.transform.position, transform.position) <  hitRange)
         {
-            if (enteredArena)
-            {
-                RaycastHit2D hit = Physics2D.Raycast(transform.position, tPlayer.position, Mathf.Infinity, movementLayer);
-
-                while(hit.collider == null)
-                {
-                    targetPos = (tPlayer.position - transform.position).normalized * targetPercentage;
-                    moveToPlayer = true;
-                }
-                targetPos = RandomizeMovePosition();
-                moveToPlayer = false;
-            }
-            
+            StartCoroutine(HitPlayer());
         }
-    Vector2 RandomizeMovePosition()
+    }
+
+    IEnumerator HitPlayer()
+    {
+        yield return new WaitForSeconds(.5f);
+
+        RaycastHit2D hit = Physics2D.CircleCast(transform.position, hitRange, Vector2.zero);
+
+        if (hit.collider != null && hit.collider.gameObject.tag == "Player")
         {
-            Vector2 acquiredPos = UnityEngine.Random.insideUnitCircle * randomRadius;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, acquiredPos, Vector2.Distance(transform.position, acquiredPos));
-
-            while(hit.collider != null)
-            {
-                acquiredPos = UnityEngine.Random.insideUnitCircle * randomRadius;
-                hit = Physics2D.Raycast(transform.position, acquiredPos, Vector2.Distance(transform.position, acquiredPos));
-            }
-
-            return acquiredPos;
+            EnemyKilled();
         }
-    #endregion
-
-    #region Shooting
-    void ShootAtPlayer()
-     {
-        //Check if in range
-        if(Vector2.Distance(transform.position, tPlayer.position) < shootingRange)
-        {
-
-        }
-     }
-
-    IEnumerator CoolDown()
-        {
-            float time = shootCooldown;
-            
-            while(time > 0)
-            {
-                time -= Time.deltaTime;
-                yield return null;
-            }
-
-            canShoot = true;
-        }
-    #endregion
+    }
 
     private void EnemyKilled()
     {
-        onEnemyKilled?.Invoke(waveIndex);
+        Debug.Log("Enemy Killed");
     }
 
     private void SetWaveIndex(int newWaveIndex)
     {
-        waveIndex = newWaveIndex;
+
     }
 
     private void OnEnable()
@@ -145,11 +90,8 @@ public class cs_Enemy : MonoBehaviour
         cs_WaveManager.setWaveIndex -= SetWaveIndex;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "")
-        {
-
-        }
+        enteredArena = true;
     }
 }

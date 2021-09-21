@@ -12,7 +12,7 @@ public class cs_MusicPlayer : MonoBehaviour
     public bool started;
     bool disable;
     public static cs_MusicPlayer instance;
-
+        
     private void Start()
     {
         if (!instance)

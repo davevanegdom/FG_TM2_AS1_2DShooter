@@ -15,6 +15,7 @@ public class cs_PlayerController : MonoBehaviour
     [SerializeField] AudioSource shootSound;
     [SerializeField] AudioSource chargeshotSound;
     [SerializeField] AudioSource chargingSound;
+    [SerializeField] AudioSource DashSound;
 
     #region Movement System variables
 
@@ -133,6 +134,7 @@ public class cs_PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space) && canDash || Input.GetKeyDown(KeyCode.Joystick1Button10) && canDash)
             {
                 DashPlayer(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+                DashSound.Play();
             }
 
             //Shoot
